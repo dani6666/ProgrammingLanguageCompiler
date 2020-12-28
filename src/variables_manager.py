@@ -8,7 +8,7 @@ class VariablesManager:
         if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
             raise Exception("Variable already declared")
 
-        VariablesManager.tables_locations[id]=VariablesManager.next_location
+        VariablesManager.variables_locations[id]=VariablesManager.next_location
         VariablesManager.next_location+=1
     
     # def declare_table(id, size):
@@ -25,7 +25,7 @@ class VariablesManager:
         if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
             raise Exception("Variable already declared")
 
-        VariablesManager.variables_locations[id]=(VariablesManager.next_location,start,end)
+        VariablesManager.tables_locations[id]=(VariablesManager.next_location,start,end)
         VariablesManager.next_location+=end-start+1
 
     def get_table_location(id, index):
@@ -41,6 +41,17 @@ class VariablesManager:
             raise Exception("Index out of range")
 
         return table_data[0]+index-table_data[1]
+    
+    def get_table_data(id):
+        if id in VariablesManager.variables_locations.keys():
+            raise Exception("Variable is a variable")
+
+        if id not in VariablesManager.tables_locations.keys():
+            raise Exception("Undeclared variable")
+        
+        table_data = VariablesManager.variables_locations[id]
+
+        return table_data[0], table_data[1]
 
     def get_location(id):
         if id in VariablesManager.tables_locations.keys():
@@ -55,8 +66,9 @@ class VariablesManager:
         return VariablesManager.next_location
 
     def get_register():
-        return availble_registers.pop(0)
+        return VariablesManager.availble_registers.pop(0)
     
     def add_register(register):
-        return availble_registers.append(register)
+        print("RESET "+register)
+        return VariablesManager.availble_registers.append(register)
         
