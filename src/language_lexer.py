@@ -51,7 +51,6 @@ class LanguageLexer(Lexer):
     @_(r'\d+')
     def NUMBER(self, t):
         t.value = int(t.value)
-        print("KURRREEEEEEEEEEEEEEEEEEEEEEEE")
         return t
 
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -61,7 +60,6 @@ class LanguageLexer(Lexer):
     # Line number tracking
     @_(r'\n+')
     def ignore_newline(self, t):
-        print("NNNNNNNNNNNNNNNNNNNNNNN")
         self.lineno += t.value.count('\n')
     
     

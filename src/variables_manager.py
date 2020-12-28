@@ -2,7 +2,7 @@ class VariablesManager:
     variables_locations={}
     tables_locations={}
     next_location = 0
-    availble_registers = ['a','b','c','d','f']
+    availble_registers = ['a','b','c','d','e','f']
 
     def declare_variable(id):
         if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
@@ -11,7 +11,7 @@ class VariablesManager:
         VariablesManager.variables_locations[id]=VariablesManager.next_location
         VariablesManager.next_location+=1
     
-    # def declare_table(id, size):
+    # def declare_table(id, size):sni
     #     if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
     #         raise Exception("Variable already declared")
 
@@ -19,7 +19,7 @@ class VariablesManager:
     #     VariablesManager.next_location+=size
     
     def declare_table(id, start, end):
-        if end > start:
+        if end < start:
             raise Exception("End index bigger than start index")
 
         if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
@@ -35,7 +35,7 @@ class VariablesManager:
         if id not in VariablesManager.tables_locations.keys():
             raise Exception("Undeclared variable")
         
-        table_data = VariablesManager.variables_locations[id]
+        table_data = VariablesManager.tables_locations[id]
 
         if index>table_data[2] or index<table_data[1]:
             raise Exception("Index out of range")
@@ -49,7 +49,7 @@ class VariablesManager:
         if id not in VariablesManager.tables_locations.keys():
             raise Exception("Undeclared variable")
         
-        table_data = VariablesManager.variables_locations[id]
+        table_data = VariablesManager.tables_locations[id]
 
         return table_data[0], table_data[1]
 
