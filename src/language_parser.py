@@ -11,8 +11,7 @@ class LanguageParser(Parser):
 
     @_('DECLARE declarations BEGIN commands END')
     def program(self, p):
-        print(p.commands[0])
-        print("HALT")
+        return p.commands[0][1:]+"\nHALT"
     
     @_('declarations COMMA ID LEFT NUMBER COLON NUMBER RIGHT')
     def declarations(self, p):
