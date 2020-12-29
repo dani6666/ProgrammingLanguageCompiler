@@ -332,7 +332,7 @@ class LanguageParser(Parser):
                 "\nSTORE "+result_register+" "+ref_reg,\
                 ref_lines + val_lines0 + val_lines1 + mod_lines + 3
 #endregion
-# zwracamy tez ilosc linijek, condition jesli true to skacze, na kponiec ifa skok przez elsa
+
 #region condition
     @_('value EQUAL value')
     def condition(self, p):
