@@ -188,22 +188,14 @@ class LanguageParser(Parser):
                 "\nSTORE "+reg1+" "+reg+\
                 "\nPUT "+reg, gen_lines1 + gen_lines2 + 4
     
-    @_('WRITE variable SEMICOLON')
+    @_('WRITE variable_reference SEMICOLON')
     def command(self, p):
-        reg = VariablesManager.get_register()
-        temp_location = VariablesManager.get_temp_location()
-        var_reg, var_code, var_lines = p.variable
+        ref_reg, ref_code, ref_lines = p.variable_reference
 
-        gen_code, gen_lines = Helpers.generate_number(temp_location, reg)
+        VariablesManager.add_register(ref_reg)
 
-        VariablesManager.add_register(reg)
-        VariablesManager.add_register(var_reg)
-
-        return  var_code+\
-                "\nRESET " +reg+\
-                gen_code+\
-                "\nSTORE "+var_reg+" "+reg+\
-                "\nPUT "+reg, var_lines + gen_lines + 3
+        return  ref_code+\
+                "\nPUT "+ref_reg, ref_lines + 1
 #endregion
 
 #region ASSIGNments
@@ -354,7 +346,7 @@ class LanguageParser(Parser):
                 "\nADD "+reg+" "+val_reg0+\
                 "\nSUB "+reg+" "+val_reg1+\
                 "\nJZERO "+reg+" 2"+\
-                "\nJUMP 6"+\
+                "\nJUMP 4"+\
                 "\nADD "+reg+" "+val_reg1+\
                 "\nSUB "+reg+" "+val_reg0+\
                 "\nJZERO "+reg+" 2",\
@@ -441,7 +433,7 @@ class LanguageParser(Parser):
                 "\nADD "+reg+" "+val_reg0+\
                 "\nSUB "+reg+" "+val_reg1+\
                 "\nJZERO "+reg+" 2",\
-                val_lines0 + val_lines1 + 5
+                val_lines0 + val_lines1 + 4
     
     @_('value GREATEREQUAL value')
     def condition(self, p):
@@ -460,7 +452,7 @@ class LanguageParser(Parser):
                 "\nADD "+reg+" "+val_reg1+\
                 "\nSUB "+reg+" "+val_reg0+\
                 "\nJZERO "+reg+" 2",\
-                val_lines0 + val_lines1 + 5
+                val_lines0 + val_lines1 + 4
 #endregion
 
 #region IF
