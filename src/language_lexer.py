@@ -57,7 +57,7 @@ class LanguageLexer(Lexer):
 
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
 
-    ignore_comment = r'\[.*\]'
+    ignore_comment = r'\[[^\]]*\]'
 
     # Line number tracking
     @_(r'\n+')

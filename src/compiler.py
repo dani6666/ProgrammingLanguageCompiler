@@ -8,6 +8,7 @@ lexer = LanguageLexer()
 parser = LanguageParser()
 with open(source_file_name, 'r') as source_reader:
     source_code = source_reader.read().replace("\n", " ")
+    
 result = parser.parse(lexer.tokenize(source_code))
 
 with open(output_file_name, 'w') as output_writer:

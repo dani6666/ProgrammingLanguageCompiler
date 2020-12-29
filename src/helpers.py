@@ -3,18 +3,16 @@ class Helpers:
         if number == 0:
             return "", 0
 
-        val = 1
-        lines=1
-        code = "\nINC "+id
-        while val*2<=number:
-            code += "\nSHL "+id
+        code = ""
+        lines = 0
+        while number > 0:
             lines+=1
-            val *= 2
-
-        while val<number:
-            code += "\nINC "+id
-            lines+=1
-            val *= 2
+            if number % 2 == 0:
+                code = "\nSHL "+id + code
+                number = number / 2
+            else:
+                code = "\nINC "+id + code
+                number = number - 1
         
         return code, lines
 

@@ -13,6 +13,10 @@ class LanguageParser(Parser):
     def program(self, p):
         return p.commands[0][1:]+"\nHALT"
     
+    @_('BEGIN commands END')
+    def program(self, p):
+        return p.commands[0][1:]+"\nHALT"
+    
     @_('declarations COMMA ID LEFT NUMBER COLON NUMBER RIGHT')
     def declarations(self, p):
         VariablesManager.declare_table(p.ID, p.NUMBER0, p.NUMBER1)
@@ -107,15 +111,15 @@ class LanguageParser(Parser):
     def variable_reference(self, p):
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
-        return reg, "\nRESET "+reg + gen_code, gen_lines
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
 
     @_('ID LEFT ID RIGHT')
     def variable_reference(self, p):
-        start_location, start_index = VariablesManager.get_table_data(p.ID)
+        start_location, start_index = VariablesManager.get_table_data(p.ID0)
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
 
-        gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID), reg1)
+        gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID1), reg1)
 
         gen_code1, gen_lines1 = Helpers.generate_number(start_location, reg1)
 
@@ -140,7 +144,7 @@ class LanguageParser(Parser):
     def variable_reference(self, p):
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_location(p.ID), reg)
-        return reg, "\nRESET "+reg + gen_code, gen_lines
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
 
 #endregion
 
@@ -153,7 +157,7 @@ class LanguageParser(Parser):
     def value(self, p):
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
-        return reg, "\nRESET "+reg + gen_code, gen_lines
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
 
 #endregion
 
@@ -353,9 +357,8 @@ class LanguageParser(Parser):
                 "\nJUMP 6"+\
                 "\nADD "+reg+" "+val_reg1+\
                 "\nSUB "+reg+" "+val_reg0+\
-                "\nJZERO "+reg+" 2"+\
-                "\nJUMP 2",\
-                val_lines0 + val_lines1 + 9
+                "\nJZERO "+reg+" 2",\
+                val_lines0 + val_lines1 + 8
     
     @_('value NOTEQUAL value')
     def condition(self, p):
@@ -377,8 +380,9 @@ class LanguageParser(Parser):
                 "\nJUMP 4"+\
                 "\nADD "+reg+" "+val_reg1+\
                 "\nSUB "+reg+" "+val_reg0+\
-                "\nJZERO "+reg+" 2",\
-                val_lines0 + val_lines1 + 8
+                "\nJZERO "+reg+" 2"+\
+                "\nJUMP 2",\
+                val_lines0 + val_lines1 + 9
 
     @_('value LESSTHAN value')
     def condition(self, p):
@@ -487,6 +491,7 @@ class LanguageParser(Parser):
     def command(self, p):
         cond_code, cond_lines = p.condition
         com_code, com_lines = p.commands
+        print(com_lines)
         return  cond_code+\
                 "\nJUMP "+str(com_lines+2)+\
                 com_code+\
