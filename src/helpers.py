@@ -1,122 +1,88 @@
 class Helpers:
     def generate_number(number, id):
-        print("RESET "+id)
         if number == 0:
-            return
+            return "", 0
 
         val = 1
-        print("INC "+id)
+        lines=1
+        code = "\nINC "+id
         while val*2<=number:
-            print("SHL "+id)
+            code += "\nSHL "+id
+            lines+=1
             val *= 2
 
         while val<number:
-            print("INC "+id)
+            code += "\nINC "+id
+            lines+=1
             val *= 2
-
-
-    def multiplication(arg_registers, free_registers):
-        print("RESET "+free_registers[0])
-        print("RESET "+free_registers[1])
-        print("RESET "+free_registers[2])
-
-        print("INC "+free_registers[0])
-
-        print("SHL "+free_registers[0])
-        print("SHL "+arg_registers[0])
-
-        print("ADD "+free_registers[2] +" "+ free_registers[0])
-        print("SUB "+free_registers[2] +" "+ arg_registers[1])
-        print("JZERO "+free_registers[2]+" -4")
-        print("RESET "+free_registers[2])
-
-        print("SHR "+free_registers[0])
-        print("SHR "+arg_registers[0])
-
-        print("INC "+free_registers[2])
-        print("ADD "+free_registers[2] +" "+ arg_registers[1])
-        print("SUB "+free_registers[2] +" "+ free_registers[0])
         
-        print("JZERO "+free_registers[2]+" 4")
-        print("RESET "+free_registers[2])
-        print("ADD "+free_registers[1]+" "+arg_registers[0])
-        print("SUB "+arg_registers[1]+" "+free_registers[0])
-
-        print("SHR "+free_registers[0])
-        print("SHR "+arg_registers[0])
-
-        print("JZERO "+arg_registers[1]+" 2")
-        print("JUMP -10")
-
-        return free_registers[1]
+        return code, lines
 
 
-    def division(arg_registers, free_registers):
-        print("RESET "+free_registers[0])
-        print("RESET "+free_registers[1])
-        print("RESET "+free_registers[2])
-        print("JZERO "+arg_registers[1]+" 21")
+    def multiplication(arg, free):
+        return  "\nINC "+free[0]+\
+                "\nSHL "+free[0]+\
+                "\nSHL "+arg[0]+\
+                "\nADD "+free[2] +" "+ free[0]+\
+                "\nSUB "+free[2] +" "+ arg[1]+\
+                "\nJZERO "+free[2]+" -4"+\
+                "\nRESET "+free[2]+\
+                "\nSHR "+free[0]+\
+                "\nSHR "+arg[0]+\
+                "\nINC "+free[2]+\
+                "\nADD "+free[2] +" "+ arg[1]+\
+                "\nSUB "+free[2] +" "+ free[0]+\
+                "\nJZERO "+free[2]+" 4"+\
+                "\nRESET "+free[2]+\
+                "\nADD "+free[1]+" "+arg[0]+\
+                "\nSUB "+arg[1]+" "+free[0]+\
+                "\nSHR "+free[0]+\
+                "\nSHR "+arg[0]+\
+                "\nJZERO "+arg[1]+" 2"+\
+                "\nJUMP -10", free[1], 20
 
-        print("SHL "+arg_registers[1])
-        print("INC "+free_registers[0])
-
-        print("ADD "+free_registers[2] +" "+ arg_registers[1])
-        print("SUB "+free_registers[2] +" "+ arg_registers[0])
-        print("JZERO "+free_registers[2]+" -4")
-        print("RESET "+free_registers[2])
-
-        print("SHR "+arg_registers[1])
-
-        print("SHL "+free_registers[1])
-        print("DEC "+free_registers[0])
-        
-        print("JZERO "+arg_registers[1]+" 8")
-        print("INC "+free_registers[2])
-        print("ADD "+free_registers[2] +" "+ arg_registers[0])
-        print("SUB "+free_registers[2] +" "+ arg_registers[1])
-        print("JZERO "+free_registers[2]+" 4")
-        print("RESET "+free_registers[2])
-        
-        print("INC "+free_registers[1])
-        print("SUB "+arg_registers[0]+" "+arg_registers[1])
-
-        print("SHR "+arg_registers[1])
-
-        print("JZERO "+free_registers[0]+" 2")
-        print("JUMP -12")
-
-        return free_registers[1]
+    def division(arg, free):
+        return  "\nJZERO "+arg[1]+" 21"+\
+                "\nSHL "+arg[1]+\
+                "\nINC "+free[0]+\
+                "\nADD "+free[2] +" "+ arg[1]+\
+                "\nSUB "+free[2] +" "+ arg[0]+\
+                "\nJZERO "+free[2]+" -4"+\
+                "\nRESET "+free[2]+\
+                "\nSHR "+arg[1]+\
+                "\nSHL "+free[1]+\
+                "\nDEC "+free[0]+\
+                "\nJZERO "+arg[1]+" 8"+\
+                "\nINC "+free[2]+\
+                "\nADD "+free[2] +" "+ arg[0]+\
+                "\nSUB "+free[2] +" "+ arg[1]+\
+                "\nJZERO "+free[2]+" 4"+\
+                "\nRESET "+free[2]+\
+                "\nINC "+free[1]+\
+                "\nSUB "+arg[0]+" "+arg[1]+\
+                "\nSHR "+arg[1]+\
+                "\nJZERO "+free[0]+" 2"+\
+                "\nJUMP -12", free[1], 21
     
-    def modulo(arg_registers, free_registers):
-        print("RESET "+free_registers[0])
-        print("RESET "+free_registers[1])
-        print("JZERO "+arg_registers[1]+" 21")
-
-        print("SHL "+arg_registers[1])
-        print("INC "+free_registers[0])
-
-        print("ADD "+free_registers[1] +" "+ arg_registers[1])
-        print("SUB "+free_registers[1] +" "+ arg_registers[0])
-        print("JZERO "+free_registers[1]+" -4")
-        print("RESET "+free_registers[1])
-
-        print("SHR "+arg_registers[1])
-
-        print("DEC "+free_registers[0])
-        
-        print("INC "+free_registers[1])
-        print("ADD "+free_registers[1] +" "+ arg_registers[0])
-        print("SUB "+free_registers[1] +" "+ arg_registers[1])
-        print("JZERO "+free_registers[1]+" 3")
-        print("RESET "+free_registers[1])
-        
-        print("SUB "+arg_registers[0]+" "+arg_registers[1])
-        print("SHR "+arg_registers[1])
-
-        print("JZERO "+free_registers[0]+" 2")
-        print("JUMP -9")
-
-        return arg_registers[0]
+    def modulo(arg, free):
+        return  "\nJZERO "+arg[1]+" 18"+\
+                "\nSHL "+arg[1]+\
+                "\nINC "+free[0]+\
+                "\nADD "+free[1] +" "+ arg[1]+\
+                "\nSUB "+free[1] +" "+ arg[0]+\
+                "\nJZERO "+free[1]+" -4"+\
+                "\nRESET "+free[1]+\
+                "\nSHR "+arg[1]+\
+                "\nDEC "+free[0]+\
+                "\nINC "+free[1]+\
+                "\nADD "+free[1] +" "+ arg[0]+\
+                "\nSUB "+free[1] +" "+ arg[1]+\
+                "\nJZERO "+free[1]+" 3"+\
+                "\nRESET "+free[1]+\
+                "\nSUB "+arg[0]+" "+arg[1]+\
+                "\nSHR "+arg[1]+\
+                "\nJZERO "+free[0]+" 2"+\
+                "\nJUMP -9", arg[0], 18
 
 
 # a=4,b=2,c=0

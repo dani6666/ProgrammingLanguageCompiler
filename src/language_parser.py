@@ -11,6 +11,7 @@ class LanguageParser(Parser):
 
     @_('DECLARE declarations BEGIN commands END')
     def program(self, p):
+        print(p.commands[0])
         print("HALT")
     
     @_('declarations COMMA ID LEFT NUMBER COLON NUMBER RIGHT')
@@ -33,11 +34,13 @@ class LanguageParser(Parser):
     
     @_('commands command')
     def commands(self, p):
-        return p.commands
+        all_code, all_lines = p.commands
+        add_code, add_lines = p.command
+        return all_code + add_code, all_lines + add_lines
 
     @_('command')
     def commands(self, p):
-        pass
+        return p.command
 
 #endregion
 
@@ -46,61 +49,99 @@ class LanguageParser(Parser):
     def variable(self, p):
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
-        Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
-        print("LOAD "+reg1+" "+reg)
-        VariablesManager.add_register(reg)
-        return reg1
 
-    @_('ID LEFT variable RIGHT')
+        gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
+
+        VariablesManager.add_register(reg)
+        return reg1, \
+                "\nRESET "+reg+\
+                "\nRESET "+reg1+\
+                gen_code+\
+                "\nLOAD "+reg1+" "+reg, gen_lines+3
+
+    @_('ID LEFT ID RIGHT')
     def variable(self, p):
-        start_location, start_index = VariablesManager.get_table_data(p.ID)
+        start_location, start_index = VariablesManager.get_table_data(p.ID0)
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
-        print("ADD "+reg+" "+p.variable)
-        Helpers.generate_number(start_index, reg1)
-        print("SUB "+reg+" "+reg1)
-        Helpers.generate_number(start_location, reg1)
-        print("ADD "+reg+" "+reg1)
-        print("LOAD "+p.variable+" "+reg)
+        reg2 = VariablesManager.get_register()
+
+        gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID1), reg1)
+        gen_code1, gen_lines1 = Helpers.generate_number(start_index, reg1)
+        gen_code2, gen_lines2 = Helpers.generate_number(start_location, reg1)
+
         VariablesManager.add_register(reg)
         VariablesManager.add_register(reg1)
-        return p.variable
+
+        return reg2, \
+            "\nRESET "+reg+\
+            "\nRESET "+reg1+\
+            "\nRESET "+reg2+\
+            gen_code0+\
+            "\nLOAD "+reg2+" " +reg1+\
+            "\nRESET "+reg1+\
+            "\nADD "+reg+" "+reg2+\
+            "\nRESET "+reg1+\
+            gen_code1+\
+            "\nSUB "+reg+" "+reg1+\
+            "\nRESET "+reg1+\
+            gen_code2+\
+            "\nADD "+reg+" "+reg1+\
+            "\nLOAD "+reg2+" "+reg, gen_lines0 + gen_lines1 + gen_lines2 + 9
 
     @_('ID')
     def variable(self, p):
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
         
-        Helpers.generate_number(VariablesManager.get_location(p.ID), reg1)
-        print("LOAD "+reg2+" " +reg1)
+        gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_location(p.ID), reg1)
+
         VariablesManager.add_register(reg1)
-        return reg2
+
+        return reg2,\
+            "\nRESET "+reg1+\
+            "\nRESET "+reg2+\
+            gen_code+\
+            "\nLOAD "+reg2+" " +reg1, gen_lines+3
 
     @_('ID LEFT NUMBER RIGHT')
     def variable_reference(self, p):
         reg = VariablesManager.get_register()
-        Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
-        return reg
+        gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines
 
-    @_('ID LEFT variable RIGHT')
+    @_('ID LEFT ID RIGHT')
     def variable_reference(self, p):
         start_location, start_index = VariablesManager.get_table_data(p.ID)
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
-        print("ADD "+reg+" "+p.variable)
-        Helpers.generate_number(start_index, reg1)
-        print("SUB "+reg+" "+reg1)
-        Helpers.generate_number(start_location, reg1)
-        print("ADD "+reg+" "+reg1)
+
+        gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID), reg1)
+
+        gen_code1, gen_lines1 = Helpers.generate_number(start_location, reg1)
+
+        gen_code2, gen_lines2 = Helpers.generate_number(start_index, reg1)
+
+
         VariablesManager.add_register(reg1)
-        VariablesManager.add_register(p.variable)
-        return reg
+
+        return reg,\
+            "\nRESET "+reg+\
+            "\nRESET "+reg1+\
+            gen_code0+\
+            "\nLOAD "+reg+" " +reg1+\
+            "\nRESET "+reg1+\
+            gen_code1+\
+            "\nADD "+reg+" "+reg1+\
+            "\nRESET "+reg1+\
+            gen_code2+\
+            "\nSUB "+reg+" "+reg1, gen_lines0 + gen_lines1 + gen_lines2 + 7
 
     @_('ID')
     def variable_reference(self, p):
         reg = VariablesManager.get_register()
-        Helpers.generate_number(VariablesManager.get_location(p.ID), reg)
-        return reg
+        gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_location(p.ID), reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines
 
 #endregion
 
@@ -112,99 +153,354 @@ class LanguageParser(Parser):
     @_('NUMBER')
     def value(self, p):
         reg = VariablesManager.get_register()
-        Helpers.generate_number(p.NUMBER, reg)
-        return reg
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines
 
 #endregion
 
 #region IO    
-    @_('READ variable_reference')
+    @_('READ variable_reference SEMICOLON')
     def command(self, p):
-        print("GET "+p.variable_reference)
-        VariablesManager.add_register(p.variable_reference)
+        reg, code, lines = p.variable_reference
+        VariablesManager.add_register(reg)
+        return code+"\nGET "+reg, lines+1
 
-    @_('WRITE NUMBER')
+
+    @_('WRITE NUMBER SEMICOLON')
     def command(self, p):
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
         temp_location = VariablesManager.get_temp_location()
-        Helpers.generate_number(temp_location, reg)
-        Helpers.generate_number(p.NUMBER, reg1)
-        print("STORE "+reg1+" "+reg)
-        print("PUT "+reg)
+
+        gen_code1, gen_lines1 = Helpers.generate_number(temp_location, reg)
+        gen_code2, gen_lines2 = Helpers.generate_number(p.NUMBER, reg1)
+
         VariablesManager.add_register(reg)
         VariablesManager.add_register(reg1)
+
+        return  "\nRESET " +reg+\
+                "\nRESET " +reg1+\
+                gen_code1+\
+                gen_code2+\
+                "\nSTORE "+reg1+" "+reg+\
+                "\nPUT "+reg, gen_lines1 + gen_lines2 + 4
     
-    @_('WRITE variable')
+    @_('WRITE variable SEMICOLON')
     def command(self, p):
         reg = VariablesManager.get_register()
         temp_location = VariablesManager.get_temp_location()
-        Helpers.generate_number(temp_location, reg)
-        print("STORE "+p.variable+" "+reg)
-        print("PUT "+reg)
+        var_reg, var_code, var_lines = p.variable
+
+        gen_code, gen_lines = Helpers.generate_number(temp_location, reg)
+
         VariablesManager.add_register(reg)
-        VariablesManager.add_register(p.variable)
+        VariablesManager.add_register(var_reg)
+
+        return  var_code+\
+                "\nRESET " +reg+\
+                gen_code+\
+                "\nSTORE "+var_reg+" "+reg+\
+                "\nPUT "+reg, var_lines + gen_lines + 3
 #endregion
 
-    @_('variable_reference ASSIGN value')
+#region ASSIGNments
+    @_('variable_reference ASSIGN value SEMICOLON')
     def command(self, p):
-        print("STORE "+p.value+" "+p.variable_reference)
-        VariablesManager.add_register(p.variable_reference)
-        VariablesManager.add_register(p.value)
-    
-    @_('variable_reference ASSIGN value PLUS value')
-    def command(self, p):
-        print("ADD "+p.value0+" "+p.value1)
-        print("STORE "+p.value0+" "+p.variable_reference)
-        VariablesManager.add_register(p.variable_reference)
-        VariablesManager.add_register(p.value0)
-        VariablesManager.add_register(p.value1)
+        ref_reg, ref_code, ref_lines = p.variable_reference
+        val_reg, val_code, val_lines = p.value
 
-    @_('variable_reference ASSIGN value MINUS value')
-    def command(self, p):
-        print("SUB "+p.value0+" "+p.value1)
-        print("STORE "+p.value0+" "+p.variable_reference)
-        VariablesManager.add_register(p.variable_reference)
-        VariablesManager.add_register(p.value0)
-        VariablesManager.add_register(p.value1)
+        VariablesManager.add_register(ref_reg)
+        VariablesManager.add_register(val_reg)
+
+        return  ref_code+\
+                val_code+\
+                "\nSTORE "+val_reg+" "+ref_reg, ref_lines + val_lines + 1
     
-    @_('variable_reference ASSIGN value MULTI value')
+    @_('variable_reference ASSIGN value PLUS value SEMICOLON')
+    def command(self, p):
+        ref_reg, ref_code, ref_lines = p.variable_reference
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        VariablesManager.add_register(ref_reg)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  ref_code+\
+                val_code0+\
+                val_code1+\
+                "\nADD "+val_reg0+" "+val_reg1+\
+                "\nSTORE "+val_reg0+" "+ref_reg, ref_lines + val_lines0 + val_lines1 + 2
+
+    @_('variable_reference ASSIGN value MINUS value SEMICOLON')
+    def command(self, p):
+        ref_reg, ref_code, ref_lines = p.variable_reference
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        VariablesManager.add_register(ref_reg)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+        return  ref_code+\
+                val_code0+\
+                val_code1+\
+                "\nSUB "+val_reg0+" "+val_reg1+\
+                "\nSTORE "+val_reg0+" "+ref_reg, ref_lines + val_lines0 + val_lines1 + 2
+    
+    @_('variable_reference ASSIGN value MULTI value SEMICOLON')
     def command(self, p):
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
         reg3 = VariablesManager.get_register()
-        result_register = Helpers.multiplication([p.value0, p.value1],[reg1, reg2, reg3])
-        print("STORE "+result_register+" "+p.variable_reference)
-        VariablesManager.add_register(p.variable_reference)
+
+        ref_reg, ref_code, ref_lines = p.variable_reference
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        multi_code, result_register, multi_lines = \
+            Helpers.multiplication([val_reg0, val_reg1],[reg1, reg2, reg3])
+
+        VariablesManager.add_register(ref_reg)
         VariablesManager.add_register(reg1)
         VariablesManager.add_register(reg2)
         VariablesManager.add_register(reg3)
-        VariablesManager.add_register(p.value0)
-        VariablesManager.add_register(p.value1)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  ref_code+\
+                val_code0+\
+                val_code1+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                "\nRESET "+reg3+\
+                multi_code+\
+                "\nSTORE "+result_register+" "+ref_reg,\
+                ref_lines + val_lines0 + val_lines1 + multi_lines + 4
     
-    @_('variable_reference ASSIGN value DIV value')
+    @_('variable_reference ASSIGN value DIV value SEMICOLON')
     def command(self, p):
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
         reg3 = VariablesManager.get_register()
-        result_register = Helpers.division([p.value0, p.value1],[reg1, reg2, reg3])
-        print("STORE "+result_register+" "+p.variable_reference)
-        VariablesManager.add_register(p.variable_reference)
+
+        ref_reg, ref_code, ref_lines = p.variable_reference
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        div_code, result_register, div_lines = \
+            Helpers.division([val_reg0, val_reg1],[reg1, reg2, reg3])
+
+        VariablesManager.add_register(ref_reg)
         VariablesManager.add_register(reg1)
         VariablesManager.add_register(reg2)
         VariablesManager.add_register(reg3)
-        VariablesManager.add_register(p.value0)
-        VariablesManager.add_register(p.value1)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+        
+        return  ref_code+\
+                val_code0+\
+                val_code1+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                "\nRESET "+reg3+\
+                div_code+\
+                "\nSTORE "+result_register+" "+ref_reg,\
+                ref_lines + val_lines0 + val_lines1 + div_lines + 4
     
-    @_('variable_reference ASSIGN value MOD value')
+    @_('variable_reference ASSIGN value MOD value SEMICOLON')
     def command(self, p):
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
-        result_register = Helpers.modulo([p.value0, p.value1],[reg1, reg2])
-        print("STORE "+result_register+" "+p.variable_reference)
-        VariablesManager.add_register(p.variable_reference)
+
+        ref_reg, ref_code, ref_lines = p.variable_reference
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        mod_code, result_register, mod_lines = Helpers.modulo([val_reg0, val_reg1],[reg1, reg2])
+
+        VariablesManager.add_register(ref_reg)
         VariablesManager.add_register(reg1)
         VariablesManager.add_register(reg2)
-        VariablesManager.add_register(p.value0)
-        VariablesManager.add_register(p.value1)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+        return  ref_code+\
+                val_code0+\
+                val_code1+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                mod_code+\
+                "\nSTORE "+result_register+" "+ref_reg,\
+                ref_lines + val_lines0 + val_lines1 + mod_lines + 3
+#endregion
+# zwracamy tez ilosc linijek, condition jesli true to skacze, na kponiec ifa skok przez elsa
+#region condition
+    @_('value EQUAL value')
+    def condition(self, p):
+        reg = VariablesManager.get_register()
 
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        VariablesManager.add_register(reg)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  val_code0+\
+                val_code1+\
+                "\nRESET "+reg+\
+                "\nADD "+reg+" "+val_reg0+\
+                "\nSUB "+reg+" "+val_reg1+\
+                "\nJZERO "+reg+" 2"+\
+                "\nJUMP 6"+\
+                "\nADD "+reg+" "+val_reg1+\
+                "\nSUB "+reg+" "+val_reg0+\
+                "\nJZERO "+reg+" 2"+\
+                "\nJUMP 2",\
+                val_lines0 + val_lines1 + 9
+    
+    @_('value NOTEQUAL value')
+    def condition(self, p):
+        reg = VariablesManager.get_register()
+
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        VariablesManager.add_register(reg)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  val_code0+\
+                val_code1+\
+                "\nRESET "+reg+\
+                "\nADD "+reg+" "+val_reg0+\
+                "\nSUB "+reg+" "+val_reg1+\
+                "\nJZERO "+reg+" 2"+\
+                "\nJUMP 4"+\
+                "\nADD "+reg+" "+val_reg1+\
+                "\nSUB "+reg+" "+val_reg0+\
+                "\nJZERO "+reg+" 2",\
+                val_lines0 + val_lines1 + 8
+
+    @_('value LESSTHAN value')
+    def condition(self, p):
+        reg = VariablesManager.get_register()
+
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+        
+        VariablesManager.add_register(reg)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  val_code0+\
+                val_code1+\
+                "\nRESET "+reg+\
+                "\nINC "+reg+\
+                "\nADD "+reg+" "+val_reg0+\
+                "\nSUB "+reg+" "+val_reg1+\
+                "\nJZERO "+reg+" 2",\
+                val_lines0 + val_lines1 + 5
+
+    @_('value GREATERTHAN value')
+    def condition(self, p):
+        reg = VariablesManager.get_register()
+
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        VariablesManager.add_register(reg)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  val_code0+\
+                val_code1+\
+                "\nRESET "+reg+\
+                "\nINC "+reg+\
+                "\nADD "+reg+" "+val_reg1+\
+                "\nSUB "+reg+" "+val_reg0+\
+                "\nJZERO "+reg+" 2",\
+                val_lines0 + val_lines1 + 5
+    
+    @_('value LESSEQUAL value')
+    def condition(self, p):
+        reg = VariablesManager.get_register()
+
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        VariablesManager.add_register(reg)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  val_code0+\
+                val_code1+\
+                "\nRESET "+reg+\
+                "\nADD "+reg+" "+val_reg0+\
+                "\nSUB "+reg+" "+val_reg1+\
+                "\nJZERO "+reg+" 2",\
+                val_lines0 + val_lines1 + 5
+    
+    @_('value GREATEREQUAL value')
+    def condition(self, p):
+        reg = VariablesManager.get_register()
+
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        VariablesManager.add_register(reg)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  val_code0+\
+                val_code1+\
+                "\nRESET "+reg+\
+                "\nADD "+reg+" "+val_reg1+\
+                "\nSUB "+reg+" "+val_reg0+\
+                "\nJZERO "+reg+" 2",\
+                val_lines0 + val_lines1 + 5
+#endregion
+
+#region IF
+    @_('IF condition THEN commands ELSE commands ENDIF')
+    def command(self, p):
+        cond_code, cond_lines = p.condition
+        com_code0, com_lines0 = p.commands0
+        com_code1, com_lines1 = p.commands1
+        return  cond_code+\
+                "\nJUMP "+str(com_lines0+2)+\
+                com_code0+\
+                "\nJUMP "+str(com_lines1+1)+\
+                com_code1,\
+                cond_lines + com_lines0 + com_lines1 + 2
+
+    @_('IF condition THEN commands ENDIF')
+    def command(self, p):
+        cond_code, cond_lines = p.condition
+        com_code, com_lines = p.commands
+        return  cond_code+\
+                "\nJUMP "+str(com_lines+1)+\
+                com_code,\
+                cond_lines + com_lines + 1
+#endregion
+
+#region WHILE_REPEAT
+    @_('WHILE condition DO commands ENDWHILE')
+    def command(self, p):
+        cond_code, cond_lines = p.condition
+        com_code, com_lines = p.commands
+        return  cond_code+\
+                "\nJUMP "+str(com_lines+2)+\
+                com_code+\
+                "\nJUMP -"+str(com_lines+cond_lines+1),\
+                cond_lines + com_lines + 2
+
+    @_('REPEAT commands UNTIL condition SEMICOLON')
+    def command(self, p):
+        cond_code, cond_lines = p.condition
+        com_code, com_lines = p.commands
+        return  com_code+\
+                cond_code+\
+                "\nJUMP 2"+\
+                "\nJUMP -"+str(com_lines+cond_lines+1),\
+                cond_lines + com_lines + 2
+#endregion

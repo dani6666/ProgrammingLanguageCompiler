@@ -2,10 +2,11 @@ from sly import Lexer
 
 class LanguageLexer(Lexer):
 
-    tokens = { NUMBER, DECLARE, BEGIN, END, READ, WRITE, IF, THEN, ELSE, ENDIF, WHILE, DO,
-     ENDWHILE, REPEAT, UNTIL, FOR, FROM, TO, ENDFOR, DOWNTO, EQUALS, ASSIGN, LESSEQUAL, 
+    tokens = { NUMBER, DECLARE, BEGIN,  READ, WRITE, ENDIF, IF, THEN, ELSE,  ENDWHILE, 
+     WHILE, DO,
+     REPEAT, UNTIL, FOR, FROM, TO, ENDFOR, DOWNTO, EQUAL, ASSIGN, LESSEQUAL, 
      LESSTHAN, GREATEREQUAL, GREATERTHAN, NOTEQUAL, ID, COMMA, PLUS, MINUS, MULTI, DIV, MOD,
-     LEFT, RIGHT, COLON, SEMICOLON }
+     LEFT, RIGHT, COLON, SEMICOLON, END}
 
 
     # String containing ignored characters
@@ -15,16 +16,15 @@ class LanguageLexer(Lexer):
     COMMA       = r','
     DECLARE     = r'DECLARE'
     BEGIN       = r'BEGIN'
-    END         = r'END'
     READ        = r'READ'
     WRITE       = r'WRITE'
+    ENDIF       = r'ENDIF'
     IF          = r'IF'
     THEN        = r'THEN'
     ELSE        = r'ELSE'
-    ENDIF       = r'ENDIF'
+    ENDWHILE    = r'ENDWHILE'
     WHILE       = r'WHILE'
     DO          = r'DO'
-    ENDWHILE    = r'ENDWHILE'
     REPEAT      = r'REPEAT'
     UNTIL       = r'UNTIL'
     FOR         = r'FOR'
@@ -37,7 +37,7 @@ class LanguageLexer(Lexer):
     MULTI       = r'\*'
     DIV         = r'/'
     MOD         = r'%'
-    EQUALS      = r'='
+    EQUAL       = r'='
     ASSIGN      = r':='
     LESSEQUAL   = r'<='
     LESSTHAN    = r'<'
@@ -48,6 +48,7 @@ class LanguageLexer(Lexer):
     RIGHT       = r'\)'
     COLON       = r':'
     SEMICOLON   = r';'
+    END         = r'END'
 
     @_(r'\d+')
     def NUMBER(self, t):
@@ -62,8 +63,6 @@ class LanguageLexer(Lexer):
     @_(r'\n+')
     def ignore_newline(self, t):
         self.lineno += t.value.count('\n')
-    
-    
 
     def error(self, t):
         print('Line %d: Bad character %r' % (self.lineno, t.value[0]))

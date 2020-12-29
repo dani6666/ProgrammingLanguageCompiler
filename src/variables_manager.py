@@ -62,6 +62,5 @@ class VariablesManager:
         return VariablesManager.availble_registers.pop(0)
     
     def add_register(register):
-        print("RESET "+register)
-        return VariablesManager.availble_registers.append(register)
+        VariablesManager.availble_registers.append(register)
         
