@@ -483,7 +483,6 @@ class LanguageParser(Parser):
     def command(self, p):
         cond_code, cond_lines = p.condition
         com_code, com_lines = p.commands
-        print(com_lines)
         return  cond_code+\
                 "\nJUMP "+str(com_lines+2)+\
                 com_code+\
@@ -499,4 +498,59 @@ class LanguageParser(Parser):
                 "\nJUMP 2"+\
                 "\nJUMP -"+str(com_lines+cond_lines+1),\
                 cond_lines + com_lines + 2
+#endregion
+
+#region FOR
+    @_('FOR ID')
+    def for_declaration(self, p):
+        VariablesManager.declare_for(p.ID)
+        return p.ID
+    
+    @_('ENDFOR')
+    def end_of_for(self, p):
+        VariablesManager.undeclare_last_for()
+
+    @_('for_declaration FROM value TO value DO commands end_of_for')
+    def command(self, p):
+        reg0 = VariablesManager.get_register()
+        reg1 = VariablesManager.get_register()
+
+        for_location = VariablesManager.get_for_location(p.for_declaration)
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+        com_code, com_lines = p.commands
+
+        gen_code0, gen_lines1 = Helpers.generate_number(for_location, reg0)
+
+        return  val_code0+\
+                val_code1+\
+                "\nRESET "+reg0+\
+                "\nRESET "+reg1+\
+                gen_code0+\
+                "\nINC "+val_reg0+\
+                "\nSTORE "+val_reg0+" "+reg0+\
+                "\nDEC "+val_reg0+\
+                "\nINC "+reg0+\
+                "\nSTORE "+val_reg0+" "+reg0+\
+                "\nINC "+reg0+\
+                "\nSTORE "+val_reg1+" "+reg0+\
+
+                "\nRESET "+reg0+\
+                gen_code0+\
+                "\nLOAD "+val_reg0+" "+reg0+\
+                "\nINC "+val_reg0+\
+                "\nSTORE "+val_reg0+" "+reg0+\
+                "\nINC "+reg0+\
+                "\nINC "+reg0+\
+                "\nLOAD "+val_reg1+" "+reg0
+                "\nRESET "+reg0+\
+                "\nINC "+reg0+\
+                "\nADD "+reg0+" "+val_reg1+\
+                "\nSUB "+reg0+" "+val_reg0+\
+                "\nJZERO "+reg0+" "+str(com_lines+2)+\
+                com_code+\
+                "\nJUMP -"+str(com_lines+gen_lines1+12),\
+                val_lines0 + val_lines1 + com_lines + gen_lines1*2 + 22
+
+ 
 #endregion

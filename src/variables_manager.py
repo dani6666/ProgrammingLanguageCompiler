@@ -1,6 +1,8 @@
 class VariablesManager:
     variables_locations={}
     tables_locations={}
+    for_locations={}
+    declared_fors=[]
     next_location = 0
     availble_registers = ['a','b','c','d','e','f']
 
@@ -20,6 +22,23 @@ class VariablesManager:
 
         VariablesManager.tables_locations[id]=(VariablesManager.next_location,start,end)
         VariablesManager.next_location+=end-start+1
+    
+    def declare_for(id):
+        if id in VariablesManager.variables_locations.keys() or \
+            id in VariablesManager.tables_locations.keys() or \
+            id in VariablesManager.for_locations.keys():
+            raise Exception("Variable already declared")
+
+        VariablesManager.declared_fors.append(id)
+        VariablesManager.for_locations[id]=VariablesManager.next_location
+        VariablesManager.next_location+=3
+
+        return VariablesManager.variables_locations[id]
+    
+    def undeclare_last_for():
+        last_for = VariablesManager.declared_fors.popleft()
+        VariablesManager.for_locations.pop(last_for)
+        VariablesManager.next_location-=3
 
     def get_table_location(id, index):
         if id in VariablesManager.variables_locations.keys():
@@ -54,6 +73,9 @@ class VariablesManager:
             raise Exception("Undeclared variable")
         
         return VariablesManager.variables_locations[id]
+    
+    def get_for_location(id):
+        return VariablesManager.for_locations[id]
     
     def get_temp_location():
         return VariablesManager.next_location
