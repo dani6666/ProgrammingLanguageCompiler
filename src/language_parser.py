@@ -195,4 +195,16 @@ class LanguageParser(Parser):
         VariablesManager.add_register(reg3)
         VariablesManager.add_register(p.value0)
         VariablesManager.add_register(p.value1)
+    
+    @_('variable_reference ASSIGN value MOD value')
+    def command(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+        result_register = Helpers.modulo([p.value0, p.value1],[reg1, reg2])
+        print("STORE "+result_register+" "+p.variable_reference)
+        VariablesManager.add_register(p.variable_reference)
+        VariablesManager.add_register(reg1)
+        VariablesManager.add_register(reg2)
+        VariablesManager.add_register(p.value0)
+        VariablesManager.add_register(p.value1)
 

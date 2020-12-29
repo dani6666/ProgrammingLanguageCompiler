@@ -4,7 +4,7 @@ class LanguageLexer(Lexer):
 
     tokens = { NUMBER, DECLARE, BEGIN, END, READ, WRITE, IF, THEN, ELSE, ENDIF, WHILE, DO,
      ENDWHILE, REPEAT, UNTIL, FOR, FROM, TO, ENDFOR, DOWNTO, EQUALS, ASSIGN, LESSEQUAL, 
-     LESSTHAN, GREATEREQUAL, GREATERTHAN, NOTEQUAL, ID, COMMA, PLUS, MINUS, MULTI, DIV, 
+     LESSTHAN, GREATEREQUAL, GREATERTHAN, NOTEQUAL, ID, COMMA, PLUS, MINUS, MULTI, DIV, MOD,
      LEFT, RIGHT, COLON, SEMICOLON }
 
 
@@ -36,6 +36,7 @@ class LanguageLexer(Lexer):
     MINUS       = r'-'
     MULTI       = r'\*'
     DIV         = r'/'
+    MOD         = r'%'
     EQUALS      = r'='
     ASSIGN      = r':='
     LESSEQUAL   = r'<='

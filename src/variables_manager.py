@@ -11,13 +11,6 @@ class VariablesManager:
         VariablesManager.variables_locations[id]=VariablesManager.next_location
         VariablesManager.next_location+=1
     
-    # def declare_table(id, size):sni
-    #     if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
-    #         raise Exception("Variable already declared")
-
-    #     VariablesManager.variables_locations[id]=(VariablesManager.next_location,0,size-1)
-    #     VariablesManager.next_location+=size
-    
     def declare_table(id, start, end):
         if end < start:
             raise Exception("End index bigger than start index")
