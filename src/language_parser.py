@@ -60,7 +60,8 @@ class LanguageParser(Parser):
                 "\nRESET "+reg+\
                 "\nRESET "+reg1+\
                 gen_code+\
-                "\nLOAD "+reg1+" "+reg, gen_lines+3
+                "\nLOAD "+reg1+" "+reg,\
+                gen_lines+3
 
     @_('ID LEFT ID RIGHT')
     def variable(self, p):
@@ -90,7 +91,8 @@ class LanguageParser(Parser):
             "\nRESET "+reg1+\
             gen_code2+\
             "\nADD "+reg+" "+reg1+\
-            "\nLOAD "+reg2+" "+reg, gen_lines0 + gen_lines1 + gen_lines2 + 9
+            "\nLOAD "+reg2+" "+reg,\
+            gen_lines0 + gen_lines1 + gen_lines2 + 11
 
     @_('ID')
     def variable(self, p):
@@ -105,7 +107,8 @@ class LanguageParser(Parser):
             "\nRESET "+reg1+\
             "\nRESET "+reg2+\
             gen_code+\
-            "\nLOAD "+reg2+" " +reg1, gen_lines+3
+            "\nLOAD "+reg2+" " +reg1,\
+            gen_lines + 3
 
     @_('ID LEFT NUMBER RIGHT')
     def variable_reference(self, p):
@@ -138,7 +141,8 @@ class LanguageParser(Parser):
             "\nADD "+reg+" "+reg1+\
             "\nRESET "+reg1+\
             gen_code2+\
-            "\nSUB "+reg+" "+reg1, gen_lines0 + gen_lines1 + gen_lines2 + 7
+            "\nSUB "+reg+" "+reg1,\
+            gen_lines0 + gen_lines1 + gen_lines2 + 7
 
     @_('ID')
     def variable_reference(self, p):
@@ -186,7 +190,8 @@ class LanguageParser(Parser):
                 gen_code1+\
                 gen_code2+\
                 "\nSTORE "+reg1+" "+reg+\
-                "\nPUT "+reg, gen_lines1 + gen_lines2 + 4
+                "\nPUT "+reg,\
+                gen_lines1 + gen_lines2 + 4
     
     @_('WRITE variable_reference SEMICOLON')
     def command(self, p):
@@ -195,7 +200,8 @@ class LanguageParser(Parser):
         VariablesManager.add_register(ref_reg)
 
         return  ref_code+\
-                "\nPUT "+ref_reg, ref_lines + 1
+                "\nPUT "+ref_reg,\
+                ref_lines + 1
 #endregion
 
 #region ASSIGNments
@@ -209,7 +215,8 @@ class LanguageParser(Parser):
 
         return  ref_code+\
                 val_code+\
-                "\nSTORE "+val_reg+" "+ref_reg, ref_lines + val_lines + 1
+                "\nSTORE "+val_reg+" "+ref_reg,\
+                ref_lines + val_lines + 1
     
     @_('variable_reference ASSIGN value PLUS value SEMICOLON')
     def command(self, p):
@@ -225,7 +232,8 @@ class LanguageParser(Parser):
                 val_code0+\
                 val_code1+\
                 "\nADD "+val_reg0+" "+val_reg1+\
-                "\nSTORE "+val_reg0+" "+ref_reg, ref_lines + val_lines0 + val_lines1 + 2
+                "\nSTORE "+val_reg0+" "+ref_reg,\
+                ref_lines + val_lines0 + val_lines1 + 2
 
     @_('variable_reference ASSIGN value MINUS value SEMICOLON')
     def command(self, p):
@@ -236,11 +244,13 @@ class LanguageParser(Parser):
         VariablesManager.add_register(ref_reg)
         VariablesManager.add_register(val_reg0)
         VariablesManager.add_register(val_reg1)
+
         return  ref_code+\
                 val_code0+\
                 val_code1+\
                 "\nSUB "+val_reg0+" "+val_reg1+\
-                "\nSTORE "+val_reg0+" "+ref_reg, ref_lines + val_lines0 + val_lines1 + 2
+                "\nSTORE "+val_reg0+" "+ref_reg,\
+                ref_lines + val_lines0 + val_lines1 + 2
     
     @_('variable_reference ASSIGN value MULTI value SEMICOLON')
     def command(self, p):
@@ -503,54 +513,73 @@ class LanguageParser(Parser):
 #region FOR
     @_('FOR ID')
     def for_declaration(self, p):
-        VariablesManager.declare_for(p.ID)
-        return p.ID
+        return VariablesManager.declare_for(p.ID)
     
     @_('ENDFOR')
     def end_of_for(self, p):
         VariablesManager.undeclare_last_for()
 
-    @_('for_declaration FROM value TO value DO commands end_of_for')
-    def command(self, p):
+    @_('FROM value TO value')
+    def for_asc_range(self, p):
         reg0 = VariablesManager.get_register()
-        reg1 = VariablesManager.get_register()
-
-        for_location = VariablesManager.get_for_location(p.for_declaration)
+        for_location = VariablesManager.get_last_for_location()
         val_reg0, val_code0, val_lines0 = p.value0
         val_reg1, val_code1, val_lines1 = p.value1
-        com_code, com_lines = p.commands
 
-        gen_code0, gen_lines1 = Helpers.generate_number(for_location, reg0)
+        gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
+
+        VariablesManager.add_register(reg0)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
 
         return  val_code0+\
                 val_code1+\
                 "\nRESET "+reg0+\
-                "\nRESET "+reg1+\
                 gen_code0+\
-                "\nINC "+val_reg0+\
-                "\nSTORE "+val_reg0+" "+reg0+\
                 "\nDEC "+val_reg0+\
+                "\nSTORE "+val_reg0+" "+reg0+\
+                "\nINC "+val_reg0+\
                 "\nINC "+reg0+\
                 "\nSTORE "+val_reg0+" "+reg0+\
                 "\nINC "+reg0+\
-                "\nSTORE "+val_reg1+" "+reg0+\
+                "\nSTORE "+val_reg1+" "+reg0,\
+                val_lines0 + val_lines1 + gen_lines0 + 8
 
+
+    @_('for_declaration for_asc_range DO commands end_of_for')
+    def command(self, p):
+        reg0 = VariablesManager.get_register()
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+
+        for_location = p.for_declaration
+        com_code, com_lines = p.commands
+
+        range_code, range_lines = p.for_asc_range
+
+        gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
+
+        VariablesManager.add_register(reg0)
+        VariablesManager.add_register(reg1)
+        VariablesManager.add_register(reg2)
+
+        return  range_code+\
                 "\nRESET "+reg0+\
                 gen_code0+\
-                "\nLOAD "+val_reg0+" "+reg0+\
-                "\nINC "+val_reg0+\
-                "\nSTORE "+val_reg0+" "+reg0+\
+                "\nLOAD "+reg1+" "+reg0+\
+                "\nINC "+reg1+\
+                "\nSTORE "+reg1+" "+reg0+\
                 "\nINC "+reg0+\
                 "\nINC "+reg0+\
-                "\nLOAD "+val_reg1+" "+reg0
+                "\nLOAD "+reg2+" "+reg0+\
                 "\nRESET "+reg0+\
                 "\nINC "+reg0+\
-                "\nADD "+reg0+" "+val_reg1+\
-                "\nSUB "+reg0+" "+val_reg0+\
+                "\nADD "+reg0+" "+reg2+\
+                "\nSUB "+reg0+" "+reg1+\
                 "\nJZERO "+reg0+" "+str(com_lines+2)+\
                 com_code+\
-                "\nJUMP -"+str(com_lines+gen_lines1+12),\
-                val_lines0 + val_lines1 + com_lines + gen_lines1*2 + 22
+                "\nJUMP -"+str(com_lines+gen_lines0+12),\
+                range_lines + com_lines + gen_lines0 + 13
 
  
 #endregion

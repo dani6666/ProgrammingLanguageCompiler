@@ -33,10 +33,11 @@ class VariablesManager:
         VariablesManager.for_locations[id]=VariablesManager.next_location
         VariablesManager.next_location+=3
 
-        return VariablesManager.variables_locations[id]
+        return VariablesManager.for_locations[id]
     
     def undeclare_last_for():
-        last_for = VariablesManager.declared_fors.popleft()
+        last_for = VariablesManager.declared_fors[-1]
+        VariablesManager.declared_fors = VariablesManager.declared_fors[:-1]
         VariablesManager.for_locations.pop(last_for)
         VariablesManager.next_location-=3
 
@@ -70,12 +71,18 @@ class VariablesManager:
             raise Exception("Variable is a table")
 
         if id not in VariablesManager.variables_locations.keys():
+            if id in VariablesManager.for_locations.keys():
+                return VariablesManager.for_locations[id]        
             raise Exception("Undeclared variable")
         
         return VariablesManager.variables_locations[id]
     
     def get_for_location(id):
         return VariablesManager.for_locations[id]
+    
+    def get_last_for_location():
+        last_for_id = VariablesManager.declared_fors[-1]
+        return VariablesManager.for_locations[last_for_id]
     
     def get_temp_location():
         return VariablesManager.next_location
