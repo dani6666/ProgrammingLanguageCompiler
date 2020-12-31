@@ -55,7 +55,7 @@ class LanguageLexer(Lexer):
         t.value = int(t.value)
         return t
 
-    ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
+    ID = r'[_a-z]+'
 
     ignore_comment = r'\[[^\]]*\]'
 

@@ -22,9 +22,17 @@ class LanguageParser(Parser):
         VariablesManager.declare_table(p.ID, p.NUMBER0, p.NUMBER1)
         return p.declarations
     
+    @_('declarations COMMA ID LEFT NUMBER RIGHT')
+    def declarations(self, p):
+        raise Exception("Incorrect table declaration")
+    
     @_('ID LEFT NUMBER COLON NUMBER RIGHT')
     def declarations(self, p):
         VariablesManager.declare_table(p.ID, p.NUMBER0, p.NUMBER1)
+    
+    @_('ID LEFT NUMBER RIGHT')
+    def declarations(self, p):
+        raise Exception("Incorrect table declaration")
 
     @_('declarations COMMA ID')
     def declarations(self, p):
@@ -65,12 +73,15 @@ class LanguageParser(Parser):
 
     @_('ID LEFT ID RIGHT')
     def variable(self, p):
+        var_location = VariablesManager.get_location(p.ID1)
+        VariablesManager.check_initialization(p.ID1)
+
         start_location, start_index = VariablesManager.get_table_data(p.ID0)
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
 
-        gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID1), reg1)
+        gen_code0, gen_lines0 = Helpers.generate_number(var_location, reg1)
         gen_code1, gen_lines1 = Helpers.generate_number(start_index, reg1)
         gen_code2, gen_lines2 = Helpers.generate_number(start_location, reg1)
 
@@ -96,10 +107,13 @@ class LanguageParser(Parser):
 
     @_('ID')
     def variable(self, p):
+        var_location = VariablesManager.get_location(p.ID)
+        VariablesManager.check_initialization(p.ID)
+
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
         
-        gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_location(p.ID), reg1)
+        gen_code, gen_lines = Helpers.generate_number(var_location, reg1)
 
         VariablesManager.add_register(reg1)
 
@@ -146,8 +160,21 @@ class LanguageParser(Parser):
 
     @_('ID')
     def variable_reference(self, p):
+        var_location = VariablesManager.get_location(p.ID)
+        VariablesManager.check_for_iterator(p.ID)
+        VariablesManager.initialize_variable(p.ID)
+
         reg = VariablesManager.get_register()
-        gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_location(p.ID), reg)
+        gen_code, gen_lines = Helpers.generate_number(var_location, reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
+    
+    @_('ID')
+    def write_variable_reference(self, p):
+        var_location = VariablesManager.get_location(p.ID)
+        VariablesManager.check_initialization(p.ID)
+
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(var_location, reg)
         return reg, "\nRESET "+reg + gen_code, gen_lines+1
 
 #endregion
@@ -193,9 +220,9 @@ class LanguageParser(Parser):
                 "\nPUT "+reg,\
                 gen_lines1 + gen_lines2 + 4
     
-    @_('WRITE variable_reference SEMICOLON')
+    @_('WRITE write_variable_reference SEMICOLON')
     def command(self, p):
-        ref_reg, ref_code, ref_lines = p.variable_reference
+        ref_reg, ref_code, ref_lines = p.write_variable_reference
 
         VariablesManager.add_register(ref_reg)
 
@@ -505,24 +532,26 @@ class LanguageParser(Parser):
         com_code, com_lines = p.commands
         return  com_code+\
                 cond_code+\
-                "\nJUMP 2"+\
-                "\nJUMP -"+str(com_lines+cond_lines+1),\
-                cond_lines + com_lines + 2
+                "\nJUMP -"+str(com_lines+cond_lines),\
+                cond_lines + com_lines + 1
 #endregion
 
 #region FOR
     @_('FOR ID')
     def for_declaration(self, p):
+        VariablesManager.initialize_variable(p.ID)
         return VariablesManager.declare_for(p.ID)
     
     @_('ENDFOR')
     def end_of_for(self, p):
         VariablesManager.undeclare_last_for()
 
-    @_('FROM value TO value')
+    @_('FOR ID FROM value TO value')
     def for_asc_range(self, p):
+        VariablesManager.initialize_variable(p.ID)
+        for_location = VariablesManager.declare_for(p.ID)
+
         reg0 = VariablesManager.get_register()
-        for_location = VariablesManager.get_last_for_location()
         val_reg0, val_code0, val_lines0 = p.value0
         val_reg1, val_code1, val_lines1 = p.value1
 
@@ -532,7 +561,7 @@ class LanguageParser(Parser):
         VariablesManager.add_register(val_reg0)
         VariablesManager.add_register(val_reg1)
 
-        return  val_code0+\
+        return  for_location, val_code0+\
                 val_code1+\
                 "\nRESET "+reg0+\
                 gen_code0+\
@@ -543,10 +572,12 @@ class LanguageParser(Parser):
                 "\nSTORE "+val_reg1+" "+reg0,\
                 val_lines0 + val_lines1 + gen_lines0 + 6
     
-    @_('FROM value DOWNTO value')
+    @_('FOR ID FROM value DOWNTO value')
     def for_desc_range(self, p):
+        VariablesManager.initialize_variable(p.ID)
+        for_location = VariablesManager.declare_for(p.ID)
+
         reg0 = VariablesManager.get_register()
-        for_location = VariablesManager.get_last_for_location()
         val_reg0, val_code0, val_lines0 = p.value0
         val_reg1, val_code1, val_lines1 = p.value1
 
@@ -556,7 +587,7 @@ class LanguageParser(Parser):
         VariablesManager.add_register(val_reg0)
         VariablesManager.add_register(val_reg1)
 
-        return  val_code0+\
+        return  for_location, val_code0+\
                 val_code1+\
                 "\nRESET "+reg0+\
                 gen_code0+\
@@ -568,16 +599,15 @@ class LanguageParser(Parser):
                 val_lines0 + val_lines1 + gen_lines0 + 6
 
 
-    @_('for_declaration for_asc_range DO commands end_of_for')
+    @_('for_asc_range DO commands end_of_for')
     def command(self, p):
         reg0 = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
 
-        for_location = p.for_declaration
         com_code, com_lines = p.commands
 
-        range_code, range_lines = p.for_asc_range
+        for_location, range_code, range_lines = p.for_asc_range
 
         gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
 
@@ -606,16 +636,15 @@ class LanguageParser(Parser):
                 "\nJUMP -"+str(com_lines+gen_lines0+12),\
                 range_lines + com_lines + gen_lines0*2 + 15
     
-    @_('for_declaration for_desc_range DO commands end_of_for')
+    @_('for_desc_range DO commands end_of_for')
     def command(self, p):
         reg0 = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
 
-        for_location = p.for_declaration
         com_code, com_lines = p.commands
 
-        range_code, range_lines = p.for_desc_range
+        for_location, range_code, range_lines = p.for_desc_range
 
         gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
         gen_code1, gen_lines1 = Helpers.generate_number(for_location + 2, reg0)

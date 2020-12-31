@@ -79,8 +79,9 @@ class Helpers:
                 "\nRESET "+free[1]+\
                 "\nSUB "+arg[0]+" "+arg[1]+\
                 "\nSHR "+arg[1]+\
-                "\nJZERO "+free[0]+" 2"+\
-                "\nJUMP -9", arg[0], 18
+                "\nJZERO "+free[0]+" 3"+\
+                "\nJUMP -9"+\
+                "\nRESET "+arg[0], arg[0], 19
 
 
 # a=4,b=2,c=0

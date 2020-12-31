@@ -1,5 +1,6 @@
 class VariablesManager:
     variables_locations={}
+    initialized_variables=[]
     tables_locations={}
     for_locations={}
     declared_fors=[]
@@ -12,6 +13,13 @@ class VariablesManager:
 
         VariablesManager.variables_locations[id]=VariablesManager.next_location
         VariablesManager.next_location+=1
+    
+    def initialize_variable(id):
+        VariablesManager.initialized_variables.append(id)
+    
+    def check_initialization(id):
+        if id not in VariablesManager.initialized_variables:
+            raise Exception("Use of not initialized variable")
     
     def declare_table(id, start, end):
         if end < start:
@@ -34,6 +42,10 @@ class VariablesManager:
         VariablesManager.next_location+=3
 
         return VariablesManager.for_locations[id]
+    
+    def check_for_iterator(id):
+        if id in VariablesManager.for_locations.keys():
+            raise Exception("For iterator modified")
     
     def undeclare_last_for():
         last_for = VariablesManager.declared_fors[-1]
