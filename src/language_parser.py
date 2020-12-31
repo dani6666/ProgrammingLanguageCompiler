@@ -536,14 +536,36 @@ class LanguageParser(Parser):
                 val_code1+\
                 "\nRESET "+reg0+\
                 gen_code0+\
-                "\nDEC "+val_reg0+\
                 "\nSTORE "+val_reg0+" "+reg0+\
-                "\nINC "+val_reg0+\
                 "\nINC "+reg0+\
                 "\nSTORE "+val_reg0+" "+reg0+\
                 "\nINC "+reg0+\
                 "\nSTORE "+val_reg1+" "+reg0,\
-                val_lines0 + val_lines1 + gen_lines0 + 8
+                val_lines0 + val_lines1 + gen_lines0 + 6
+    
+    @_('FROM value DOWNTO value')
+    def for_desc_range(self, p):
+        reg0 = VariablesManager.get_register()
+        for_location = VariablesManager.get_last_for_location()
+        val_reg0, val_code0, val_lines0 = p.value0
+        val_reg1, val_code1, val_lines1 = p.value1
+
+        gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
+
+        VariablesManager.add_register(reg0)
+        VariablesManager.add_register(val_reg0)
+        VariablesManager.add_register(val_reg1)
+
+        return  val_code0+\
+                val_code1+\
+                "\nRESET "+reg0+\
+                gen_code0+\
+                "\nSTORE "+val_reg0+" "+reg0+\
+                "\nINC "+reg0+\
+                "\nSTORE "+val_reg0+" "+reg0+\
+                "\nINC "+reg0+\
+                "\nSTORE "+val_reg1+" "+reg0,\
+                val_lines0 + val_lines1 + gen_lines0 + 6
 
 
     @_('for_declaration for_asc_range DO commands end_of_for')
@@ -567,8 +589,6 @@ class LanguageParser(Parser):
                 "\nRESET "+reg0+\
                 gen_code0+\
                 "\nLOAD "+reg1+" "+reg0+\
-                "\nINC "+reg1+\
-                "\nSTORE "+reg1+" "+reg0+\
                 "\nINC "+reg0+\
                 "\nINC "+reg0+\
                 "\nLOAD "+reg2+" "+reg0+\
@@ -576,10 +596,55 @@ class LanguageParser(Parser):
                 "\nINC "+reg0+\
                 "\nADD "+reg0+" "+reg2+\
                 "\nSUB "+reg0+" "+reg1+\
-                "\nJZERO "+reg0+" "+str(com_lines+2)+\
+                "\nJZERO "+reg0+" "+str(com_lines+gen_lines0+6)+\
                 com_code+\
+                "\nRESET "+reg0+\
+                gen_code0+\
+                "\nLOAD "+reg1+" "+reg0+\
+                "\nINC "+reg1+\
+                "\nSTORE "+reg1+" "+reg0+\
                 "\nJUMP -"+str(com_lines+gen_lines0+12),\
-                range_lines + com_lines + gen_lines0 + 13
+                range_lines + com_lines + gen_lines0*2 + 15
+    
+    @_('for_declaration for_desc_range DO commands end_of_for')
+    def command(self, p):
+        reg0 = VariablesManager.get_register()
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+
+        for_location = p.for_declaration
+        com_code, com_lines = p.commands
+
+        range_code, range_lines = p.for_desc_range
+
+        gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
+        gen_code1, gen_lines1 = Helpers.generate_number(for_location + 2, reg0)
+
+        VariablesManager.add_register(reg0)
+        VariablesManager.add_register(reg1)
+        VariablesManager.add_register(reg2)
+
+        return  range_code+\
+                "\nRESET "+reg0+\
+                gen_code0+\
+                "\nLOAD "+reg1+" "+reg0+\
+                "\nINC "+reg0+\
+                "\nINC "+reg0+\
+                "\nLOAD "+reg2+" "+reg0+\
+                "\nRESET "+reg0+\
+                "\nINC "+reg0+\
+                "\nADD "+reg0+" "+reg1+\
+                "\nSUB "+reg0+" "+reg2+\
+                "\nJZERO "+reg0+" "+str(com_lines+gen_lines0+7)+\
+                com_code+\
+                "\nRESET "+reg0+\
+                gen_code0+\
+                "\nLOAD "+reg1+" "+reg0+\
+                "\nJZERO "+reg1+" 4"+\
+                "\nDEC "+reg1+\
+                "\nSTORE "+reg1+" "+reg0+\
+                "\nJUMP -"+str(com_lines+gen_lines0+13),\
+                range_lines + com_lines + gen_lines0*2  + 16
 
  
 #endregion

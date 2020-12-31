@@ -3,8 +3,8 @@ from sly import Lexer
 class LanguageLexer(Lexer):
 
     tokens = { NUMBER, DECLARE, BEGIN,  READ, WRITE, ENDIF, IF, THEN, ELSE,  ENDWHILE, 
-     WHILE, DO,
-     REPEAT, UNTIL, FOR, FROM, TO, ENDFOR, DOWNTO, EQUAL, ASSIGN, LESSEQUAL, 
+     WHILE,
+     REPEAT, UNTIL, FOR, FROM, DOWNTO, DO, TO, ENDFOR, EQUAL, ASSIGN, LESSEQUAL, 
      LESSTHAN, GREATEREQUAL, GREATERTHAN, NOTEQUAL, ID, COMMA, PLUS, MINUS, MULTI, DIV, MOD,
      LEFT, RIGHT, COLON, SEMICOLON, END}
 
@@ -24,14 +24,14 @@ class LanguageLexer(Lexer):
     ELSE        = r'ELSE'
     ENDWHILE    = r'ENDWHILE'
     WHILE       = r'WHILE'
-    DO          = r'DO'
     REPEAT      = r'REPEAT'
     UNTIL       = r'UNTIL'
     FOR         = r'FOR'
     FROM        = r'FROM'
+    DOWNTO      = r'DOWNTO'
+    DO          = r'DO'
     TO          = r'TO'
     ENDFOR      = r'ENDFOR'
-    DOWNTO      = r'DOWNTO'
     PLUS        = r'\+'
     MINUS       = r'-'
     MULTI       = r'\*'
