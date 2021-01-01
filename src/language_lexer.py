@@ -2,6 +2,7 @@ from sly import Lexer
 
 class LanguageLexer(Lexer):
 
+    line_count = 1
     tokens = { NUMBER, DECLARE, BEGIN,  READ, WRITE, ENDIF, IF, THEN, ELSE,  ENDWHILE, 
      WHILE,
      REPEAT, UNTIL, FOR, FROM, DOWNTO, DO, TO, ENDFOR, EQUAL, ASSIGN, LESSEQUAL, 
@@ -10,7 +11,7 @@ class LanguageLexer(Lexer):
 
 
     # String containing ignored characters
-    ignore = ' \t\r\n'
+    ignore = ' \t\r'
 
     # Regular expression rules for tokens
     COMMA       = r','
@@ -62,8 +63,7 @@ class LanguageLexer(Lexer):
     # Line number tracking
     @_(r'\n+')
     def ignore_newline(self, t):
-        self.lineno += t.value.count('\n')
+        LanguageLexer.line_count += t.value.count('\n')
 
     def error(self, t):
-        print('Line %d: Bad character %r' % (self.lineno, t.value[0]))
-        self.index += 1
+        raise Exception("Line "+str(LanguageLexer.line_count)+": Bad character " + str(t.value[0]))

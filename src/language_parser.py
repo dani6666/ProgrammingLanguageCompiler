@@ -7,6 +7,12 @@ from helpers import Helpers
 class LanguageParser(Parser):
     tokens = LanguageLexer.tokens
 
+    def error(self,t):
+        if t is None:
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Unexpected end of file")
+
+        raise Exception("Line "+str(LanguageLexer.line_count)+": Unexcpeted token " + str(t.value))
+
 #region program_structure
 
     @_('DECLARE declarations BEGIN commands END')
@@ -24,7 +30,7 @@ class LanguageParser(Parser):
     
     @_('declarations COMMA ID LEFT NUMBER RIGHT')
     def declarations(self, p):
-        raise Exception("Incorrect table declaration")
+        raise Exception("Line "+str(LanguageLexer.line_count)+": Incorrect table declaration")
     
     @_('ID LEFT NUMBER COLON NUMBER RIGHT')
     def declarations(self, p):
@@ -32,7 +38,7 @@ class LanguageParser(Parser):
     
     @_('ID LEFT NUMBER RIGHT')
     def declarations(self, p):
-        raise Exception("Incorrect table declaration")
+        raise Exception("Line "+str(LanguageLexer.line_count)+": Incorrect table declaration")
 
     @_('declarations COMMA ID')
     def declarations(self, p):
@@ -537,11 +543,6 @@ class LanguageParser(Parser):
 #endregion
 
 #region FOR
-    @_('FOR ID')
-    def for_declaration(self, p):
-        VariablesManager.initialize_variable(p.ID)
-        return VariablesManager.declare_for(p.ID)
-    
     @_('ENDFOR')
     def end_of_for(self, p):
         VariablesManager.undeclare_last_for()
