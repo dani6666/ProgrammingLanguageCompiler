@@ -90,7 +90,6 @@ class LanguageParser(Parser):
         VariablesManager.add_register(reg1)
 
         return reg0, \
-            "\nRESET "+reg0+\
             "\nRESET "+reg1+\
             gen_code0+\
             "\nLOAD "+reg0+" " +reg1+\
@@ -102,7 +101,7 @@ class LanguageParser(Parser):
             gen_code2+\
             "\nADD "+reg0+" "+reg1+\
             "\nLOAD "+reg0+" "+reg0,\
-            gen_lines0 + gen_lines1 + gen_lines2 + 9
+            gen_lines0 + gen_lines1 + gen_lines2 + 8
 
     @_('ID')
     def variable(self, p):
@@ -204,11 +203,31 @@ class LanguageParser(Parser):
 
 #endregion
 
+#region numeric_operation
+    # @_('NUMBER PLUS NUMBER')
+    # def numeric_operation(self, p):
+    #     reg = VariablesManager.get_register()
+    #     gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 + p.NUMBER1, reg)
+    #     return reg, "\nRESET "+reg + gen_code, gen_lines+1
+    
+    #  @_('NUMBER MINUS NUMBER')
+    # def numeric_operation(self, p):
+    #     reg = VariablesManager.get_register()
+    #     gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 - p.NUMBER1, reg)
+    #     return reg, "\nRESET "+reg + gen_code, gen_lines+1
+    
+    # @_('NUMBER MULTI NUMBER')
+    # def numeric_operation(self, p):
+    #     reg = VariablesManager.get_register()
+    #     gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 * p.NUMBER1, reg)
+    #     return reg, "\nRESET "+reg + gen_code, gen_lines+1
+#endregion
+
 #region value
     @_('variable')
     def value(self, p):
         return p.variable
-
+    
     @_('NUMBER')
     def value(self, p):
         reg = VariablesManager.get_register()
@@ -257,6 +276,19 @@ class LanguageParser(Parser):
 #endregion
 
 #region ASSIGNments
+    # @_('variable_reference ASSIGN numeric_operation SEMICOLON')
+    # def command(self, p):
+    #     ref_reg, ref_code, ref_lines = p.variable_reference
+    #     val_reg, val_code, val_lines = p.numeric_operation
+
+    #     VariablesManager.add_register(ref_reg)
+    #     VariablesManager.add_register(val_reg)
+
+    #     return  ref_code+\
+    #             val_code+\
+    #             "\nSTORE "+val_reg+" "+ref_reg,\
+    #             ref_lines + val_lines + 1
+
     @_('variable_reference ASSIGN value SEMICOLON')
     def command(self, p):
         ref_reg, ref_code, ref_lines = p.variable_reference
