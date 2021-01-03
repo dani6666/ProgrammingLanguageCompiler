@@ -182,6 +182,40 @@ class LanguageParser(Parser):
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(var_location, reg)
         return reg, "\nRESET "+reg + gen_code, gen_lines+1
+    
+    @_('ID LEFT NUMBER RIGHT')
+    def write_variable_reference(self, p):
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
+
+    @_('ID LEFT ID RIGHT')
+    def write_variable_reference(self, p):
+        start_location, start_index = VariablesManager.get_table_data(p.ID0)
+        reg = VariablesManager.get_register()
+        reg1 = VariablesManager.get_register()
+
+        gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID1), reg1)
+
+        gen_code1, gen_lines1 = Helpers.generate_number(start_location, reg1)
+
+        gen_code2, gen_lines2 = Helpers.generate_number(start_index, reg1)
+
+
+        VariablesManager.add_register(reg1)
+
+        return reg,\
+            "\nRESET "+reg+\
+            "\nRESET "+reg1+\
+            gen_code0+\
+            "\nLOAD "+reg+" " +reg1+\
+            "\nRESET "+reg1+\
+            gen_code1+\
+            "\nADD "+reg+" "+reg1+\
+            "\nRESET "+reg1+\
+            gen_code2+\
+            "\nSUB "+reg+" "+reg1,\
+            gen_lines0 + gen_lines1 + gen_lines2 + 7
 
 #endregion
 

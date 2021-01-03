@@ -11,7 +11,7 @@ class VariablesManager:
 
     def declare_variable(id):
         if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable already declared")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable already declared: "+id)
 
         VariablesManager.variables_locations[id]=VariablesManager.next_location
         VariablesManager.next_location+=1
@@ -21,14 +21,14 @@ class VariablesManager:
     
     def check_initialization(id):
         if id not in VariablesManager.initialized_variables:
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Use of not initialized variable")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Use of not initialized variable: "+id)
     
     def declare_table(id, start, end):
         if end < start:
             raise Exception("Line "+str(LanguageLexer.line_count)+": End index bigger than start index")
 
         if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable already declared")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable already declared: "+id)
 
         VariablesManager.tables_locations[id]=(VariablesManager.next_location,start,end)
         VariablesManager.next_location+=end-start+1
@@ -37,7 +37,7 @@ class VariablesManager:
         if id in VariablesManager.variables_locations.keys() or \
             id in VariablesManager.tables_locations.keys() or \
             id in VariablesManager.for_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable already declared")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable already declared: "+id)
 
         VariablesManager.declared_fors.append(id)
         VariablesManager.for_locations[id]=VariablesManager.next_location
@@ -47,7 +47,7 @@ class VariablesManager:
     
     def check_for_iterator(id):
         if id in VariablesManager.for_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": For iterator modified")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": For iterator modified: "+id)
     
     def undeclare_last_for():
         last_for = VariablesManager.declared_fors[-1]
@@ -57,10 +57,10 @@ class VariablesManager:
 
     def get_table_location(id, index):
         if id in VariablesManager.variables_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable is a variable")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable used as table: "+id)
 
         if id not in VariablesManager.tables_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Undeclared variable")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Undeclared variable: "+id)
         
         table_data = VariablesManager.tables_locations[id]
 
@@ -71,10 +71,10 @@ class VariablesManager:
     
     def get_table_data(id):
         if id in VariablesManager.variables_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable is a variable")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable used as table: "+id)
 
         if id not in VariablesManager.tables_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Undeclared variable")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Undeclared variable: "+id)
         
         table_data = VariablesManager.tables_locations[id]
 
@@ -82,12 +82,12 @@ class VariablesManager:
 
     def get_location(id):
         if id in VariablesManager.tables_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable is a table")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Table used as variable: "+id)
 
         if id not in VariablesManager.variables_locations.keys():
             if id in VariablesManager.for_locations.keys():
                 return VariablesManager.for_locations[id]        
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Undeclared variable")
+            raise Exception("Line "+str(LanguageLexer.line_count)+": Undeclared variable: "+id)
         
         return VariablesManager.variables_locations[id]
     
