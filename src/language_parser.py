@@ -65,17 +65,14 @@ class LanguageParser(Parser):
     @_('ID LEFT NUMBER RIGHT')
     def variable(self, p):
         reg = VariablesManager.get_register()
-        reg1 = VariablesManager.get_register()
 
         gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
 
-        VariablesManager.add_register(reg)
-        return reg1, \
+        return reg, \
                 "\nRESET "+reg+\
-                "\nRESET "+reg1+\
                 gen_code+\
-                "\nLOAD "+reg1+" "+reg,\
-                gen_lines+3
+                "\nLOAD "+reg+" "+reg,\
+                gen_lines+2
 
     @_('ID LEFT ID RIGHT')
     def variable(self, p):
@@ -83,52 +80,44 @@ class LanguageParser(Parser):
         VariablesManager.check_initialization(p.ID1)
 
         start_location, start_index = VariablesManager.get_table_data(p.ID0)
-        reg = VariablesManager.get_register()
+        reg0 = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
-        reg2 = VariablesManager.get_register()
 
         gen_code0, gen_lines0 = Helpers.generate_number(var_location, reg1)
         gen_code1, gen_lines1 = Helpers.generate_number(start_index, reg1)
         gen_code2, gen_lines2 = Helpers.generate_number(start_location, reg1)
 
-        VariablesManager.add_register(reg)
         VariablesManager.add_register(reg1)
 
-        return reg2, \
-            "\nRESET "+reg+\
+        return reg0, \
+            "\nRESET "+reg0+\
             "\nRESET "+reg1+\
-            "\nRESET "+reg2+\
             gen_code0+\
-            "\nLOAD "+reg2+" " +reg1+\
+            "\nLOAD "+reg0+" " +reg1+\
             "\nRESET "+reg1+\
-            "\nADD "+reg+" "+reg2+\
             "\nRESET "+reg1+\
             gen_code1+\
-            "\nSUB "+reg+" "+reg1+\
+            "\nSUB "+reg0+" "+reg1+\
             "\nRESET "+reg1+\
             gen_code2+\
-            "\nADD "+reg+" "+reg1+\
-            "\nLOAD "+reg2+" "+reg,\
-            gen_lines0 + gen_lines1 + gen_lines2 + 11
+            "\nADD "+reg0+" "+reg1+\
+            "\nLOAD "+reg0+" "+reg0,\
+            gen_lines0 + gen_lines1 + gen_lines2 + 9
 
     @_('ID')
     def variable(self, p):
         var_location = VariablesManager.get_location(p.ID)
         VariablesManager.check_initialization(p.ID)
 
-        reg1 = VariablesManager.get_register()
-        reg2 = VariablesManager.get_register()
+        reg = VariablesManager.get_register()
         
-        gen_code, gen_lines = Helpers.generate_number(var_location, reg1)
+        gen_code, gen_lines = Helpers.generate_number(var_location, reg)
 
-        VariablesManager.add_register(reg1)
-
-        return reg2,\
-            "\nRESET "+reg1+\
-            "\nRESET "+reg2+\
+        return reg,\
+            "\nRESET "+reg+\
             gen_code+\
-            "\nLOAD "+reg2+" " +reg1,\
-            gen_lines + 3
+            "\nLOAD "+reg+" " +reg,\
+            gen_lines + 2
 
     @_('ID LEFT NUMBER RIGHT')
     def variable_reference(self, p):
@@ -143,16 +132,13 @@ class LanguageParser(Parser):
         reg1 = VariablesManager.get_register()
 
         gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID1), reg1)
-
         gen_code1, gen_lines1 = Helpers.generate_number(start_location, reg1)
-
         gen_code2, gen_lines2 = Helpers.generate_number(start_index, reg1)
 
 
         VariablesManager.add_register(reg1)
 
         return reg,\
-            "\nRESET "+reg+\
             "\nRESET "+reg1+\
             gen_code0+\
             "\nLOAD "+reg+" " +reg1+\
@@ -162,7 +148,7 @@ class LanguageParser(Parser):
             "\nRESET "+reg1+\
             gen_code2+\
             "\nSUB "+reg+" "+reg1,\
-            gen_lines0 + gen_lines1 + gen_lines2 + 7
+            gen_lines0 + gen_lines1 + gen_lines2 + 6
 
     @_('ID')
     def variable_reference(self, p):
@@ -205,7 +191,6 @@ class LanguageParser(Parser):
         VariablesManager.add_register(reg1)
 
         return reg,\
-            "\nRESET "+reg+\
             "\nRESET "+reg1+\
             gen_code0+\
             "\nLOAD "+reg+" " +reg1+\
@@ -215,7 +200,7 @@ class LanguageParser(Parser):
             "\nRESET "+reg1+\
             gen_code2+\
             "\nSUB "+reg+" "+reg1,\
-            gen_lines0 + gen_lines1 + gen_lines2 + 7
+            gen_lines0 + gen_lines1 + gen_lines2 + 6
 
 #endregion
 
