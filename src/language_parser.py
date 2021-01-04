@@ -265,46 +265,60 @@ class LanguageParser(Parser):
 
     @_('variable PLUS variable')
     def expression(self, p):
-        val_reg0, val_code0, val_lines0 = p.variable0
-        val_reg1, val_code1, val_lines1 = p.variable1
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
 
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg1)
 
-        return  val_reg0,\
-                val_code0+\
-                val_code1+\
-                "\nADD "+val_reg0+" "+val_reg1,\
-                val_lines0 + val_lines1 + 1
+        return  var_reg0,\
+                var_code0+\
+                var_code1+\
+                "\nADD "+var_reg0+" "+var_reg1,\
+                var_lines0 + var_lines1 + 1
     
     @_('variable PLUS NUMBER')
     def expression(self, p):
-        val_reg0, val_code0, val_lines0 = p.variable
+        var_reg, var_code, var_lines = p.variable
+        if p.NUMBER == 0:
+            return var_reg, var_code, var_lines
+        elif p.NUMBER == 1:
+            return var_reg, var_code+"\nINC "+var_reg, var_lines+1
+        elif p.NUMBER == 2:
+            return var_reg, var_code+"\nINC "+var_reg+"\nINC "+var_reg, var_lines+2
+
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
 
         VariablesManager.add_register(reg)
 
-        return  val_reg0,\
-                val_code0+\
+        return  var_reg,\
+                var_code+\
                 "\nRESET "+reg+\
                 gen_code+\
-                "\nADD "+val_reg0+" "+reg,\
-                val_lines0 + gen_lines + 2
+                "\nADD "+var_reg+" "+reg,\
+                var_lines + gen_lines + 2
     
     @_('NUMBER PLUS variable')
     def expression(self, p):
+        var_reg, var_code, var_lines = p.variable
+        if p.NUMBER == 0:
+            return var_reg, var_code, var_lines
+        elif p.NUMBER == 1:
+            return var_reg, var_code+"\nINC "+var_reg, var_lines+1
+        elif p.NUMBER == 2:
+            return var_reg, var_code+"\nINC "+var_reg+"\nINC "+var_reg, var_lines+2
+
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
-        val_reg1, val_code1, val_lines1 = p.variable
 
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg)
 
         return  reg,\
-                val_code1+\
+                var_code+\
                 "\nRESET "+reg+\
                 gen_code+\
-                "\nADD "+reg+" "+val_reg1,\
-                val_lines1 + gen_lines + 2
+                "\nADD "+reg+" "+var_reg,\
+                var_lines + gen_lines + 2
     
     @_('NUMBER PLUS NUMBER')
     def expression(self, p):
@@ -315,46 +329,62 @@ class LanguageParser(Parser):
 
     @_('variable MINUS variable')
     def expression(self, p):
-        val_reg0, val_code0, val_lines0 = p.variable0
-        val_reg1, val_code1, val_lines1 = p.variable1
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
 
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg1)
 
-        return  val_reg0,\
-                val_code0+\
-                val_code1+\
-                "\nSUB "+val_reg0+" "+val_reg1,\
-                val_lines0 + val_lines1 + 1
+        return  var_reg0,\
+                var_code0+\
+                var_code1+\
+                "\nSUB "+var_reg0+" "+var_reg1,\
+                var_lines0 + var_lines1 + 1
     
     @_('variable MINUS NUMBER')
     def expression(self, p):
-        val_reg0, val_code0, val_lines0 = p.variable
+        var_reg, var_code, var_lines = p.variable
+
+        if p.NUMBER == 0:
+            return var_reg, var_code, var_lines
+        elif p.NUMBER == 1:
+            return var_reg, var_code+"\nDEC "+var_reg, var_lines+1
+        elif p.NUMBER == 2:
+            return var_reg, var_code+"\nDEC "+var_reg+"\nDEC "+var_reg, var_lines+2
+
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
 
         VariablesManager.add_register(reg)
 
-        return  val_reg0,\
-                val_code0+\
+        return  var_reg,\
+                var_code+\
                 "\nRESET "+reg+\
                 gen_code+\
-                "\nSUB "+val_reg0+" "+reg,\
-                val_lines0 + gen_lines + 2
+                "\nSUB "+var_reg+" "+reg,\
+                var_lines + gen_lines + 2
     
     @_('NUMBER MINUS variable')
     def expression(self, p):
+        var_reg, var_code, var_lines = p.variable
+
+        if p.NUMBER == 0:
+            return var_reg, var_code, var_lines
+        elif p.NUMBER == 1:
+            return var_reg, var_code+"\nDEC "+var_reg, var_lines+1
+        elif p.NUMBER == 2:
+            return var_reg, var_code+"\nDEC "+var_reg+"\nDEC "+var_reg, var_lines+2
+
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
-        val_reg1, val_code1, val_lines1 = p.variable
 
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg)
 
         return  reg,\
-                val_code1+\
+                var_code+\
                 "\nRESET "+reg+\
                 gen_code+\
-                "\nSUB "+reg+" "+val_reg1,\
-                val_lines1 + gen_lines + 2
+                "\nSUB "+reg+" "+var_reg,\
+                var_lines + gen_lines + 2
     
     @_('NUMBER MINUS NUMBER')
     def expression(self, p):
