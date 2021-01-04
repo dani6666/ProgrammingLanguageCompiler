@@ -82,6 +82,17 @@ class Helpers:
                 "\nJUMP -9"+\
                 "\nRESET "+arg[0], arg[0], 19
 
+    def check_for_power_of_two(number):
+        power_result = 2
+        power = 1
+        while power_result < number:
+            power_result = power_result * 2
+            power = power + 1
+        
+        if power_result == number:
+            return power
+        
+        return 0
 
 # a=4,b=2,c=0
 # while b <= a

@@ -427,11 +427,21 @@ class LanguageParser(Parser):
     
     @_('variable MULTI NUMBER')
     def expression(self, p):
+        var_reg, var_code, var_lines = p.variable
+
+        if p.NUMBER == 0:
+            return var_reg, "\nRESET "+var_reg, 1
+        
+        if p.NUMBER == 1:
+            return var_reg, var_code, var_lines
+
+        number_power = Helpers.check_for_power_of_two(p.NUMBER)
+        if number_power > 0:
+            return var_reg, var_code+("\nSHL "+var_reg)*number_power, var_lines+number_power
+
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
         reg3 = VariablesManager.get_register()
-
-        var_reg, var_code, var_lines = p.variable
 
         num_reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
@@ -462,11 +472,22 @@ class LanguageParser(Parser):
     
     @_('NUMBER MULTI variable')
     def expression(self, p):
+        var_reg, var_code, var_lines = p.variable
+
+        if p.NUMBER == 0:
+            return var_reg, "\nRESET "+var_reg, 1
+        
+        if p.NUMBER == 1:
+            return var_reg, var_code, var_lines
+        
+        number_power = Helpers.check_for_power_of_two(p.NUMBER)
+        if number_power > 0:
+            return var_reg, var_code+("\nSHL "+var_reg)*number_power, var_lines+number_power
+
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
         reg3 = VariablesManager.get_register()
 
-        var_reg, var_code, var_lines = p.variable
 
         num_reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
@@ -535,12 +556,22 @@ class LanguageParser(Parser):
     
     @_('variable DIV NUMBER')
     def expression(self, p):
+        var_reg, var_code, var_lines = p.variable
+
+        if p.NUMBER == 0:
+            return var_reg, "\nRESET "+var_reg, 1
+        
+        if p.NUMBER == 1:
+            return var_reg, var_code, var_lines
+
+        number_power = Helpers.check_for_power_of_two(p.NUMBER)
+        if number_power > 0:
+            return var_reg, var_code+("\nSHR "+var_reg)*number_power, var_lines+number_power
+
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
         reg3 = VariablesManager.get_register()
 
-        var_reg, var_code, var_lines = p.variable
-        
         num_reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
 
@@ -570,11 +601,18 @@ class LanguageParser(Parser):
     
     @_('NUMBER DIV variable')
     def expression(self, p):
+        var_reg, var_code, var_lines = p.variable
+
+        if p.NUMBER == 0:
+            return var_reg, "\nRESET "+var_reg, 1
+        
+        number_power = Helpers.check_for_power_of_two(p.NUMBER)
+        if number_power > 0:
+            return var_reg, var_code+("\nSHR "+var_reg)*number_power, var_lines+number_power
+
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
         reg3 = VariablesManager.get_register()
-
-        var_reg, var_code, var_lines = p.variable
 
         num_reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
@@ -643,10 +681,25 @@ class LanguageParser(Parser):
     
     @_('variable MOD NUMBER')
     def expression(self, p):
-        reg1 = VariablesManager.get_register()
-        reg2 = VariablesManager.get_register()
-
         var_reg, var_code, var_lines = p.variable
+
+        if p.NUMBER == 0 or p.NUMBER == 1:
+            return var_reg, "\nRESET "+var_reg, 1
+        
+        reg1 = VariablesManager.get_register()
+
+        if p.NUMBER == 2:
+            VariablesManager.add_register(var_reg)
+
+            return  reg1,\
+                    var_code+\
+                    "\nRESET "+reg1+\
+                    "JODD "+var_reg+" 2"+\
+                    "JUMP 2"+\
+                    "INC "+reg1,\
+                    var_lines + 4
+
+        reg2 = VariablesManager.get_register()
         
         num_reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
@@ -674,10 +727,13 @@ class LanguageParser(Parser):
     
     @_('NUMBER MOD variable')
     def expression(self, p):
+        var_reg, var_code, var_lines = p.variable
+
+        if p.NUMBER == 0:
+            return var_reg, "\nRESET "+var_reg, 1
+
         reg1 = VariablesManager.get_register()
         reg2 = VariablesManager.get_register()
-
-        var_reg, var_code, var_lines = p.variable
 
         num_reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
@@ -726,138 +782,6 @@ class LanguageParser(Parser):
                 exp_code+\
                 "\nSTORE "+exp_reg+" "+ref_reg,\
                 ref_lines + exp_lines + 1
-
-    # @_('variable_reference ASSIGN value SEMICOLON')
-    # def command(self, p):
-    #     ref_reg, ref_code, ref_lines = p.variable_reference
-    #     val_reg, val_code, val_lines = p.value
-
-    #     VariablesManager.add_register(ref_reg)
-    #     VariablesManager.add_register(val_reg)
-
-    #     return  ref_code+\
-    #             val_code+\
-    #             "\nSTORE "+val_reg+" "+ref_reg,\
-    #             ref_lines + val_lines + 1
-    
-    # @_('variable_reference ASSIGN value PLUS value SEMICOLON')
-    # def command(self, p):
-    #     ref_reg, ref_code, ref_lines = p.variable_reference
-    #     val_reg0, val_code0, val_lines0 = p.value0
-    #     val_reg1, val_code1, val_lines1 = p.value1
-
-    #     VariablesManager.add_register(ref_reg)
-    #     VariablesManager.add_register(val_reg0)
-    #     VariablesManager.add_register(val_reg1)
-
-    #     return  ref_code+\
-    #             val_code0+\
-    #             val_code1+\
-    #             "\nADD "+val_reg0+" "+val_reg1+\
-    #             "\nSTORE "+val_reg0+" "+ref_reg,\
-    #             ref_lines + val_lines0 + val_lines1 + 2
-
-    # @_('variable_reference ASSIGN value MINUS value SEMICOLON')
-    # def command(self, p):
-    #     ref_reg, ref_code, ref_lines = p.variable_reference
-    #     val_reg0, val_code0, val_lines0 = p.value0
-    #     val_reg1, val_code1, val_lines1 = p.value1
-
-    #     VariablesManager.add_register(ref_reg)
-    #     VariablesManager.add_register(val_reg0)
-    #     VariablesManager.add_register(val_reg1)
-
-    #     return  ref_code+\
-    #             val_code0+\
-    #             val_code1+\
-    #             "\nSUB "+val_reg0+" "+val_reg1+\
-    #             "\nSTORE "+val_reg0+" "+ref_reg,\
-    #             ref_lines + val_lines0 + val_lines1 + 2
-    
-    # @_('variable_reference ASSIGN value MULTI value SEMICOLON')
-    # def command(self, p):
-    #     reg1 = VariablesManager.get_register()
-    #     reg2 = VariablesManager.get_register()
-    #     reg3 = VariablesManager.get_register()
-
-    #     ref_reg, ref_code, ref_lines = p.variable_reference
-    #     val_reg0, val_code0, val_lines0 = p.value0
-    #     val_reg1, val_code1, val_lines1 = p.value1
-
-    #     multi_code, result_register, multi_lines = \
-    #         Helpers.multiplication([val_reg0, val_reg1],[reg1, reg2, reg3])
-
-    #     VariablesManager.add_register(ref_reg)
-    #     VariablesManager.add_register(reg1)
-    #     VariablesManager.add_register(reg2)
-    #     VariablesManager.add_register(reg3)
-    #     VariablesManager.add_register(val_reg0)
-    #     VariablesManager.add_register(val_reg1)
-
-    #     return  ref_code+\
-    #             val_code0+\
-    #             val_code1+\
-    #             "\nRESET "+reg1+\
-    #             "\nRESET "+reg2+\
-    #             "\nRESET "+reg3+\
-    #             multi_code+\
-    #             "\nSTORE "+result_register+" "+ref_reg,\
-    #             ref_lines + val_lines0 + val_lines1 + multi_lines + 4
-    
-    # @_('variable_reference ASSIGN value DIV value SEMICOLON')
-    # def command(self, p):
-    #     reg1 = VariablesManager.get_register()
-    #     reg2 = VariablesManager.get_register()
-    #     reg3 = VariablesManager.get_register()
-
-    #     ref_reg, ref_code, ref_lines = p.variable_reference
-    #     val_reg0, val_code0, val_lines0 = p.value0
-    #     val_reg1, val_code1, val_lines1 = p.value1
-
-    #     div_code, result_register, div_lines = \
-    #         Helpers.division([val_reg0, val_reg1],[reg1, reg2, reg3])
-
-    #     VariablesManager.add_register(ref_reg)
-    #     VariablesManager.add_register(reg1)
-    #     VariablesManager.add_register(reg2)
-    #     VariablesManager.add_register(reg3)
-    #     VariablesManager.add_register(val_reg0)
-    #     VariablesManager.add_register(val_reg1)
-        
-    #     return  ref_code+\
-    #             val_code0+\
-    #             val_code1+\
-    #             "\nRESET "+reg1+\
-    #             "\nRESET "+reg2+\
-    #             "\nRESET "+reg3+\
-    #             div_code+\
-    #             "\nSTORE "+result_register+" "+ref_reg,\
-    #             ref_lines + val_lines0 + val_lines1 + div_lines + 4
-    
-    # @_('variable_reference ASSIGN value MOD value SEMICOLON')
-    # def command(self, p):
-    #     reg1 = VariablesManager.get_register()
-    #     reg2 = VariablesManager.get_register()
-
-    #     ref_reg, ref_code, ref_lines = p.variable_reference
-    #     val_reg0, val_code0, val_lines0 = p.value0
-    #     val_reg1, val_code1, val_lines1 = p.value1
-
-    #     mod_code, result_register, mod_lines = Helpers.modulo([val_reg0, val_reg1],[reg1, reg2])
-
-    #     VariablesManager.add_register(ref_reg)
-    #     VariablesManager.add_register(reg1)
-    #     VariablesManager.add_register(reg2)
-    #     VariablesManager.add_register(val_reg0)
-    #     VariablesManager.add_register(val_reg1)
-    #     return  ref_code+\
-    #             val_code0+\
-    #             val_code1+\
-    #             "\nRESET "+reg1+\
-    #             "\nRESET "+reg2+\
-    #             mod_code+\
-    #             "\nSTORE "+result_register+" "+ref_reg,\
-    #             ref_lines + val_lines0 + val_lines1 + mod_lines + 3
 #endregion
 
 #region condition
