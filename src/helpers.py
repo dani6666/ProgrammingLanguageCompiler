@@ -9,13 +9,12 @@ class Helpers:
             lines+=1
             if number % 2 == 0:
                 code = "\nSHL "+id + code
-                number = number / 2
+                number = number // 2
             else:
                 code = "\nINC "+id + code
                 number = number - 1
         
         return code, lines
-
 
     def multiplication(arg, free):
         return  "\nINC "+free[0]+\

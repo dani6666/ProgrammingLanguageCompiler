@@ -181,11 +181,8 @@ class LanguageParser(Parser):
         reg1 = VariablesManager.get_register()
 
         gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID1), reg1)
-
         gen_code1, gen_lines1 = Helpers.generate_number(start_location, reg1)
-
         gen_code2, gen_lines2 = Helpers.generate_number(start_index, reg1)
-
 
         VariablesManager.add_register(reg1)
 
@@ -201,26 +198,6 @@ class LanguageParser(Parser):
             "\nSUB "+reg+" "+reg1,\
             gen_lines0 + gen_lines1 + gen_lines2 + 6
 
-#endregion
-
-#region numeric_operation
-    # @_('NUMBER PLUS NUMBER')
-    # def numeric_operation(self, p):
-    #     reg = VariablesManager.get_register()
-    #     gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 + p.NUMBER1, reg)
-    #     return reg, "\nRESET "+reg + gen_code, gen_lines+1
-    
-    #  @_('NUMBER MINUS NUMBER')
-    # def numeric_operation(self, p):
-    #     reg = VariablesManager.get_register()
-    #     gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 - p.NUMBER1, reg)
-    #     return reg, "\nRESET "+reg + gen_code, gen_lines+1
-    
-    # @_('NUMBER MULTI NUMBER')
-    # def numeric_operation(self, p):
-    #     reg = VariablesManager.get_register()
-    #     gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 * p.NUMBER1, reg)
-    #     return reg, "\nRESET "+reg + gen_code, gen_lines+1
 #endregion
 
 #region value
@@ -249,7 +226,6 @@ class LanguageParser(Parser):
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
         temp_location = VariablesManager.get_temp_location()
-
         gen_code1, gen_lines1 = Helpers.generate_number(temp_location, reg)
         gen_code2, gen_lines2 = Helpers.generate_number(p.NUMBER, reg1)
 
@@ -275,11 +251,456 @@ class LanguageParser(Parser):
                 ref_lines + 1
 #endregion
 
+#region expression
+    @_('variable')
+    def expression(self, p):
+        return p.variable
+
+    @_('NUMBER')
+    def expression(self, p):
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
+
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
+
+    @_('variable PLUS variable')
+    def expression(self, p):
+        val_reg0, val_code0, val_lines0 = p.variable0
+        val_reg1, val_code1, val_lines1 = p.variable1
+
+        VariablesManager.add_register(val_reg1)
+
+        return  val_reg0,\
+                val_code0+\
+                val_code1+\
+                "\nADD "+val_reg0+" "+val_reg1,\
+                val_lines0 + val_lines1 + 1
+    
+    @_('variable PLUS NUMBER')
+    def expression(self, p):
+        val_reg0, val_code0, val_lines0 = p.variable
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
+
+        VariablesManager.add_register(reg)
+
+        return  val_reg0,\
+                val_code0+\
+                "\nRESET "+reg+\
+                gen_code+\
+                "\nADD "+val_reg0+" "+reg,\
+                val_lines0 + gen_lines + 2
+    
+    @_('NUMBER PLUS variable')
+    def expression(self, p):
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
+        val_reg1, val_code1, val_lines1 = p.variable
+
+        VariablesManager.add_register(val_reg1)
+
+        return  reg,\
+                val_code1+\
+                "\nRESET "+reg+\
+                gen_code+\
+                "\nADD "+reg+" "+val_reg1,\
+                val_lines1 + gen_lines + 2
+    
+    @_('NUMBER PLUS NUMBER')
+    def expression(self, p):
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 + p.NUMBER1, reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
+
+
+    @_('variable MINUS variable')
+    def expression(self, p):
+        val_reg0, val_code0, val_lines0 = p.variable0
+        val_reg1, val_code1, val_lines1 = p.variable1
+
+        VariablesManager.add_register(val_reg1)
+
+        return  val_reg0,\
+                val_code0+\
+                val_code1+\
+                "\nSUB "+val_reg0+" "+val_reg1,\
+                val_lines0 + val_lines1 + 1
+    
+    @_('variable MINUS NUMBER')
+    def expression(self, p):
+        val_reg0, val_code0, val_lines0 = p.variable
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
+
+        VariablesManager.add_register(reg)
+
+        return  val_reg0,\
+                val_code0+\
+                "\nRESET "+reg+\
+                gen_code+\
+                "\nSUB "+val_reg0+" "+reg,\
+                val_lines0 + gen_lines + 2
+    
+    @_('NUMBER MINUS variable')
+    def expression(self, p):
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
+        val_reg1, val_code1, val_lines1 = p.variable
+
+        VariablesManager.add_register(val_reg1)
+
+        return  reg,\
+                val_code1+\
+                "\nRESET "+reg+\
+                gen_code+\
+                "\nSUB "+reg+" "+val_reg1,\
+                val_lines1 + gen_lines + 2
+    
+    @_('NUMBER MINUS NUMBER')
+    def expression(self, p):
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 - p.NUMBER1, reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
+
+
+    @_('variable MULTI variable')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+        reg3 = VariablesManager.get_register()
+
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
+
+        multi_code, result_register, multi_lines = \
+            Helpers.multiplication([var_reg0, var_reg1],[reg1, reg2, reg3])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if reg3 != result_register:
+            VariablesManager.add_register(reg3)
+        if var_reg0 != result_register:
+            VariablesManager.add_register(var_reg0)
+        if var_reg1 != result_register:
+            VariablesManager.add_register(var_reg1)
+
+        return  result_register,\
+                var_code0+\
+                var_code1+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                "\nRESET "+reg3+\
+                multi_code,\
+                var_lines0 + var_lines1 + multi_lines + 3
+    
+    @_('variable MULTI NUMBER')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+        reg3 = VariablesManager.get_register()
+
+        var_reg, var_code, var_lines = p.variable
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        multi_code, result_register, multi_lines = \
+            Helpers.multiplication([var_reg, num_reg],[reg1, reg2, reg3])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if reg3 != result_register:
+            VariablesManager.add_register(reg3)
+        if var_reg != result_register:
+            VariablesManager.add_register(var_reg)
+        if num_reg != result_register:
+            VariablesManager.add_register(num_reg)
+
+        return  result_register,\
+                var_code+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                "\nRESET "+reg3+\
+                multi_code,\
+                var_lines + gen_lines + multi_lines + 4
+    
+    @_('NUMBER MULTI variable')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+        reg3 = VariablesManager.get_register()
+
+        var_reg, var_code, var_lines = p.variable
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        multi_code, result_register, multi_lines = \
+            Helpers.multiplication([num_reg, var_reg],[reg1, reg2, reg3])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if reg3 != result_register:
+            VariablesManager.add_register(reg3)
+        if num_reg != result_register:
+            VariablesManager.add_register(num_reg)
+        if var_reg != result_register:
+            VariablesManager.add_register(var_reg)
+
+        return  result_register,\
+                var_code+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                "\nRESET "+reg3+\
+                multi_code,\
+                var_lines + gen_lines + multi_lines + 4
+    
+    @_('NUMBER MULTI NUMBER')
+    def expression(self, p):
+        reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 * p.NUMBER1, reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
+    
+    @_('variable DIV variable')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+        reg3 = VariablesManager.get_register()
+
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
+
+        multi_code, result_register, multi_lines = \
+            Helpers.division([var_reg0, var_reg1],[reg1, reg2, reg3])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if reg3 != result_register:
+            VariablesManager.add_register(reg3)
+        if var_reg0 != result_register:
+            VariablesManager.add_register(var_reg0)
+        if var_reg1 != result_register:
+            VariablesManager.add_register(var_reg1)
+
+        return  result_register,\
+                var_code0+\
+                var_code1+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                "\nRESET "+reg3+\
+                multi_code,\
+                var_lines0 + var_lines1 + multi_lines + 3
+    
+    @_('variable DIV NUMBER')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+        reg3 = VariablesManager.get_register()
+
+        var_reg, var_code, var_lines = p.variable
+        
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        multi_code, result_register, multi_lines = \
+            Helpers.division([var_reg, num_reg],[reg1, reg2, reg3])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if reg3 != result_register:
+            VariablesManager.add_register(reg3)
+        if var_reg != result_register:
+            VariablesManager.add_register(var_reg)
+        if num_reg != result_register:
+            VariablesManager.add_register(num_reg)
+
+        return  result_register,\
+                var_code+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                "\nRESET "+reg3+\
+                multi_code,\
+                var_lines + gen_lines + multi_lines + 4
+    
+    @_('NUMBER DIV variable')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+        reg3 = VariablesManager.get_register()
+
+        var_reg, var_code, var_lines = p.variable
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        multi_code, result_register, multi_lines = \
+            Helpers.division([num_reg, var_reg],[reg1, reg2, reg3])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if reg3 != result_register:
+            VariablesManager.add_register(reg3)
+        if num_reg != result_register:
+            VariablesManager.add_register(num_reg)
+        if var_reg != result_register:
+            VariablesManager.add_register(var_reg)
+
+        return  result_register,\
+                var_code+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                "\nRESET "+reg3+\
+                multi_code,\
+                var_lines + gen_lines + multi_lines + 4
+    
+    @_('NUMBER DIV NUMBER')
+    def expression(self, p):
+        reg = VariablesManager.get_register()
+
+        if p.NUMBER1 == 0:
+            return reg, "\nRESET "+reg, 1
+        
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 // p.NUMBER1, reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
+    
+    @_('variable MOD variable')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
+
+        multi_code, result_register, multi_lines = \
+            Helpers.modulo([var_reg0, var_reg1],[reg1, reg2])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if var_reg0 != result_register:
+            VariablesManager.add_register(var_reg0)
+        if var_reg1 != result_register:
+            VariablesManager.add_register(var_reg1)
+
+        return  result_register,\
+                var_code0+\
+                var_code1+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                multi_code,\
+                var_lines0 + var_lines1 + multi_lines + 2
+    
+    @_('variable MOD NUMBER')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+
+        var_reg, var_code, var_lines = p.variable
+        
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        multi_code, result_register, multi_lines = \
+            Helpers.modulo([var_reg, num_reg],[reg1, reg2])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if var_reg != result_register:
+            VariablesManager.add_register(var_reg)
+        if num_reg != result_register:
+            VariablesManager.add_register(num_reg)
+
+        return  result_register,\
+                var_code+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                multi_code,\
+                var_lines + gen_lines + multi_lines + 3
+    
+    @_('NUMBER MOD variable')
+    def expression(self, p):
+        reg1 = VariablesManager.get_register()
+        reg2 = VariablesManager.get_register()
+
+        var_reg, var_code, var_lines = p.variable
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        multi_code, result_register, multi_lines = \
+            Helpers.modulo([num_reg, var_reg],[reg1, reg2])
+
+        if reg1 != result_register:
+            VariablesManager.add_register(reg1)
+        if reg2 != result_register:
+            VariablesManager.add_register(reg2)
+        if num_reg != result_register:
+            VariablesManager.add_register(num_reg)
+        if var_reg != result_register:
+            VariablesManager.add_register(var_reg)
+
+        return  result_register,\
+                var_code+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nRESET "+reg1+\
+                "\nRESET "+reg2+\
+                multi_code,\
+                var_lines + gen_lines + multi_lines + 3
+    
+    @_('NUMBER MOD NUMBER')
+    def expression(self, p):
+        reg = VariablesManager.get_register()
+
+        if p.NUMBER1 == 0:
+            return reg, "\nRESET "+reg, 1
+        
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER0 % p.NUMBER1, reg)
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1
+#endregion
+
 #region ASSIGNments
-    # @_('variable_reference ASSIGN numeric_operation SEMICOLON')
+    @_('variable_reference ASSIGN expression SEMICOLON')
+    def command(self, p):
+        ref_reg, ref_code, ref_lines = p.variable_reference
+        exp_reg, exp_code, exp_lines = p.expression
+        VariablesManager.add_register(ref_reg)
+        VariablesManager.add_register(exp_reg)
+
+        return  ref_code+\
+                exp_code+\
+                "\nSTORE "+exp_reg+" "+ref_reg,\
+                ref_lines + exp_lines + 1
+
+    # @_('variable_reference ASSIGN value SEMICOLON')
     # def command(self, p):
     #     ref_reg, ref_code, ref_lines = p.variable_reference
-    #     val_reg, val_code, val_lines = p.numeric_operation
+    #     val_reg, val_code, val_lines = p.value
 
     #     VariablesManager.add_register(ref_reg)
     #     VariablesManager.add_register(val_reg)
@@ -288,138 +709,125 @@ class LanguageParser(Parser):
     #             val_code+\
     #             "\nSTORE "+val_reg+" "+ref_reg,\
     #             ref_lines + val_lines + 1
-
-    @_('variable_reference ASSIGN value SEMICOLON')
-    def command(self, p):
-        ref_reg, ref_code, ref_lines = p.variable_reference
-        val_reg, val_code, val_lines = p.value
-
-        VariablesManager.add_register(ref_reg)
-        VariablesManager.add_register(val_reg)
-
-        return  ref_code+\
-                val_code+\
-                "\nSTORE "+val_reg+" "+ref_reg,\
-                ref_lines + val_lines + 1
     
-    @_('variable_reference ASSIGN value PLUS value SEMICOLON')
-    def command(self, p):
-        ref_reg, ref_code, ref_lines = p.variable_reference
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+    # @_('variable_reference ASSIGN value PLUS value SEMICOLON')
+    # def command(self, p):
+    #     ref_reg, ref_code, ref_lines = p.variable_reference
+    #     val_reg0, val_code0, val_lines0 = p.value0
+    #     val_reg1, val_code1, val_lines1 = p.value1
 
-        VariablesManager.add_register(ref_reg)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+    #     VariablesManager.add_register(ref_reg)
+    #     VariablesManager.add_register(val_reg0)
+    #     VariablesManager.add_register(val_reg1)
 
-        return  ref_code+\
-                val_code0+\
-                val_code1+\
-                "\nADD "+val_reg0+" "+val_reg1+\
-                "\nSTORE "+val_reg0+" "+ref_reg,\
-                ref_lines + val_lines0 + val_lines1 + 2
+    #     return  ref_code+\
+    #             val_code0+\
+    #             val_code1+\
+    #             "\nADD "+val_reg0+" "+val_reg1+\
+    #             "\nSTORE "+val_reg0+" "+ref_reg,\
+    #             ref_lines + val_lines0 + val_lines1 + 2
 
-    @_('variable_reference ASSIGN value MINUS value SEMICOLON')
-    def command(self, p):
-        ref_reg, ref_code, ref_lines = p.variable_reference
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+    # @_('variable_reference ASSIGN value MINUS value SEMICOLON')
+    # def command(self, p):
+    #     ref_reg, ref_code, ref_lines = p.variable_reference
+    #     val_reg0, val_code0, val_lines0 = p.value0
+    #     val_reg1, val_code1, val_lines1 = p.value1
 
-        VariablesManager.add_register(ref_reg)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+    #     VariablesManager.add_register(ref_reg)
+    #     VariablesManager.add_register(val_reg0)
+    #     VariablesManager.add_register(val_reg1)
 
-        return  ref_code+\
-                val_code0+\
-                val_code1+\
-                "\nSUB "+val_reg0+" "+val_reg1+\
-                "\nSTORE "+val_reg0+" "+ref_reg,\
-                ref_lines + val_lines0 + val_lines1 + 2
+    #     return  ref_code+\
+    #             val_code0+\
+    #             val_code1+\
+    #             "\nSUB "+val_reg0+" "+val_reg1+\
+    #             "\nSTORE "+val_reg0+" "+ref_reg,\
+    #             ref_lines + val_lines0 + val_lines1 + 2
     
-    @_('variable_reference ASSIGN value MULTI value SEMICOLON')
-    def command(self, p):
-        reg1 = VariablesManager.get_register()
-        reg2 = VariablesManager.get_register()
-        reg3 = VariablesManager.get_register()
+    # @_('variable_reference ASSIGN value MULTI value SEMICOLON')
+    # def command(self, p):
+    #     reg1 = VariablesManager.get_register()
+    #     reg2 = VariablesManager.get_register()
+    #     reg3 = VariablesManager.get_register()
 
-        ref_reg, ref_code, ref_lines = p.variable_reference
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+    #     ref_reg, ref_code, ref_lines = p.variable_reference
+    #     val_reg0, val_code0, val_lines0 = p.value0
+    #     val_reg1, val_code1, val_lines1 = p.value1
 
-        multi_code, result_register, multi_lines = \
-            Helpers.multiplication([val_reg0, val_reg1],[reg1, reg2, reg3])
+    #     multi_code, result_register, multi_lines = \
+    #         Helpers.multiplication([val_reg0, val_reg1],[reg1, reg2, reg3])
 
-        VariablesManager.add_register(ref_reg)
-        VariablesManager.add_register(reg1)
-        VariablesManager.add_register(reg2)
-        VariablesManager.add_register(reg3)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+    #     VariablesManager.add_register(ref_reg)
+    #     VariablesManager.add_register(reg1)
+    #     VariablesManager.add_register(reg2)
+    #     VariablesManager.add_register(reg3)
+    #     VariablesManager.add_register(val_reg0)
+    #     VariablesManager.add_register(val_reg1)
 
-        return  ref_code+\
-                val_code0+\
-                val_code1+\
-                "\nRESET "+reg1+\
-                "\nRESET "+reg2+\
-                "\nRESET "+reg3+\
-                multi_code+\
-                "\nSTORE "+result_register+" "+ref_reg,\
-                ref_lines + val_lines0 + val_lines1 + multi_lines + 4
+    #     return  ref_code+\
+    #             val_code0+\
+    #             val_code1+\
+    #             "\nRESET "+reg1+\
+    #             "\nRESET "+reg2+\
+    #             "\nRESET "+reg3+\
+    #             multi_code+\
+    #             "\nSTORE "+result_register+" "+ref_reg,\
+    #             ref_lines + val_lines0 + val_lines1 + multi_lines + 4
     
-    @_('variable_reference ASSIGN value DIV value SEMICOLON')
-    def command(self, p):
-        reg1 = VariablesManager.get_register()
-        reg2 = VariablesManager.get_register()
-        reg3 = VariablesManager.get_register()
+    # @_('variable_reference ASSIGN value DIV value SEMICOLON')
+    # def command(self, p):
+    #     reg1 = VariablesManager.get_register()
+    #     reg2 = VariablesManager.get_register()
+    #     reg3 = VariablesManager.get_register()
 
-        ref_reg, ref_code, ref_lines = p.variable_reference
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+    #     ref_reg, ref_code, ref_lines = p.variable_reference
+    #     val_reg0, val_code0, val_lines0 = p.value0
+    #     val_reg1, val_code1, val_lines1 = p.value1
 
-        div_code, result_register, div_lines = \
-            Helpers.division([val_reg0, val_reg1],[reg1, reg2, reg3])
+    #     div_code, result_register, div_lines = \
+    #         Helpers.division([val_reg0, val_reg1],[reg1, reg2, reg3])
 
-        VariablesManager.add_register(ref_reg)
-        VariablesManager.add_register(reg1)
-        VariablesManager.add_register(reg2)
-        VariablesManager.add_register(reg3)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+    #     VariablesManager.add_register(ref_reg)
+    #     VariablesManager.add_register(reg1)
+    #     VariablesManager.add_register(reg2)
+    #     VariablesManager.add_register(reg3)
+    #     VariablesManager.add_register(val_reg0)
+    #     VariablesManager.add_register(val_reg1)
         
-        return  ref_code+\
-                val_code0+\
-                val_code1+\
-                "\nRESET "+reg1+\
-                "\nRESET "+reg2+\
-                "\nRESET "+reg3+\
-                div_code+\
-                "\nSTORE "+result_register+" "+ref_reg,\
-                ref_lines + val_lines0 + val_lines1 + div_lines + 4
+    #     return  ref_code+\
+    #             val_code0+\
+    #             val_code1+\
+    #             "\nRESET "+reg1+\
+    #             "\nRESET "+reg2+\
+    #             "\nRESET "+reg3+\
+    #             div_code+\
+    #             "\nSTORE "+result_register+" "+ref_reg,\
+    #             ref_lines + val_lines0 + val_lines1 + div_lines + 4
     
-    @_('variable_reference ASSIGN value MOD value SEMICOLON')
-    def command(self, p):
-        reg1 = VariablesManager.get_register()
-        reg2 = VariablesManager.get_register()
+    # @_('variable_reference ASSIGN value MOD value SEMICOLON')
+    # def command(self, p):
+    #     reg1 = VariablesManager.get_register()
+    #     reg2 = VariablesManager.get_register()
 
-        ref_reg, ref_code, ref_lines = p.variable_reference
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+    #     ref_reg, ref_code, ref_lines = p.variable_reference
+    #     val_reg0, val_code0, val_lines0 = p.value0
+    #     val_reg1, val_code1, val_lines1 = p.value1
 
-        mod_code, result_register, mod_lines = Helpers.modulo([val_reg0, val_reg1],[reg1, reg2])
+    #     mod_code, result_register, mod_lines = Helpers.modulo([val_reg0, val_reg1],[reg1, reg2])
 
-        VariablesManager.add_register(ref_reg)
-        VariablesManager.add_register(reg1)
-        VariablesManager.add_register(reg2)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
-        return  ref_code+\
-                val_code0+\
-                val_code1+\
-                "\nRESET "+reg1+\
-                "\nRESET "+reg2+\
-                mod_code+\
-                "\nSTORE "+result_register+" "+ref_reg,\
-                ref_lines + val_lines0 + val_lines1 + mod_lines + 3
+    #     VariablesManager.add_register(ref_reg)
+    #     VariablesManager.add_register(reg1)
+    #     VariablesManager.add_register(reg2)
+    #     VariablesManager.add_register(val_reg0)
+    #     VariablesManager.add_register(val_reg1)
+    #     return  ref_code+\
+    #             val_code0+\
+    #             val_code1+\
+    #             "\nRESET "+reg1+\
+    #             "\nRESET "+reg2+\
+    #             mod_code+\
+    #             "\nSTORE "+result_register+" "+ref_reg,\
+    #             ref_lines + val_lines0 + val_lines1 + mod_lines + 3
 #endregion
 
 #region condition

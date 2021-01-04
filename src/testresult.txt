@@ -21,15 +21,15 @@
 
  simple1.imp passed for input input2.txt in time 3048, i/o: 1600.
 
- simple2.imp passed for input input1.txt in time 4351, i/o: 2600.
+ simple2.imp passed for input input1.txt in time 4346, i/o: 2600.
 
- simple2.imp passed for input input2.txt in time 4278, i/o: 2600.
+ simple2.imp passed for input input2.txt in time 4273, i/o: 2600.
 
- simple2.imp passed for input input3.txt in time 4108, i/o: 2600.
+ simple2.imp passed for input input3.txt in time 4103, i/o: 2600.
 
- tab1.imp passed for input input1.txt in time 33012, i/o: 2500.
+ tab1.imp passed for input input1.txt in time 32996, i/o: 2500.
 
- tab2.imp passed for input input1.txt in time 286430, i/o: 3700.
+ tab2.imp passed for input input1.txt in time 286414, i/o: 3700.
 
  tab3.imp passed for input input1.txt in time 3056, i/o: 400.
 
@@ -37,15 +37,15 @@
 
  tab3.imp passed for input input3.txt in time 3132, i/o: 400.
 
- arithm2.imp passed for input input1.txt in time 554759, i/o: 800.
+ arithm2.imp passed for input input1.txt in time 443608, i/o: 800.
 
- arithm2.imp passed for input input2.txt in time 554759, i/o: 800.
+ arithm2.imp passed for input input2.txt in time 443608, i/o: 800.
 
- arithm3.imp passed for input input1.txt in time 735348, i/o: 500.
+ arithm3.imp passed for input input1.txt in time 735284, i/o: 500.
 
- arithm3.imp passed for input input2.txt in time 734752, i/o: 500.
+ arithm3.imp passed for input input2.txt in time 734688, i/o: 500.
 
- calc.imp passed for input input1.txt in time 267309452, i/o: 300.
+ calc.imp passed for input input1.txt in time 267309353, i/o: 300.
 
  compare.imp passed for input input1.txt in time 941, i/o: 500.
 
