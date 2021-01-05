@@ -785,130 +785,454 @@ class LanguageParser(Parser):
 #endregion
 
 #region condition
-    @_('value EQUAL value')
+
+# jesli tru to przeskakuje nastepna instrukcje
+
+    @_('variable EQUAL variable')
     def condition(self, p):
         reg = VariablesManager.get_register()
 
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
 
         VariablesManager.add_register(reg)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg0)
+        VariablesManager.add_register(var_reg1)
 
-        return  val_code0+\
-                val_code1+\
+        return  var_code0+\
+                var_code1+\
                 "\nRESET "+reg+\
-                "\nADD "+reg+" "+val_reg0+\
-                "\nSUB "+reg+" "+val_reg1+\
+                "\nADD "+reg+" "+var_reg0+\
+                "\nSUB "+reg+" "+var_reg1+\
                 "\nJZERO "+reg+" 2"+\
-                "\nJUMP 4"+\
-                "\nADD "+reg+" "+val_reg1+\
-                "\nSUB "+reg+" "+val_reg0+\
-                "\nJZERO "+reg+" 2",\
-                val_lines0 + val_lines1 + 8
+                "\nJUMP 3"+\
+                "\nSUB "+var_reg1+" "+var_reg0+\
+                "\nJZERO "+var_reg1+" 2",\
+                var_lines0 + var_lines1 + 7
     
-    @_('value NOTEQUAL value')
+    @_('variable EQUAL NUMBER')
     def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2", var_lines0 + 1
+
         reg = VariablesManager.get_register()
 
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
 
         VariablesManager.add_register(reg)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
 
-        return  val_code0+\
-                val_code1+\
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
                 "\nRESET "+reg+\
-                "\nADD "+reg+" "+val_reg0+\
-                "\nSUB "+reg+" "+val_reg1+\
+                "\nADD "+reg+" "+num_reg+\
+                "\nSUB "+reg+" "+var_reg+\
                 "\nJZERO "+reg+" 2"+\
-                "\nJUMP 4"+\
-                "\nADD "+reg+" "+val_reg1+\
-                "\nSUB "+reg+" "+val_reg0+\
-                "\nJZERO "+reg+" 2"+\
-                "\nJUMP 2",\
-                val_lines0 + val_lines1 + 9
-
-    @_('value LESSTHAN value')
+                "\nJUMP 3"+\
+                "\nSUB "+var_reg+" "+num_reg+\
+                "\nJZERO "+reg+" 2",\
+                var_lines0 + gen_lines + 8
+    
+    @_('NUMBER EQUAL variable')
     def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2", var_lines0 + 1
+
         reg = VariablesManager.get_register()
 
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        VariablesManager.add_register(reg)
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nRESET "+reg+\
+                "\nADD "+reg+" "+var_reg+\
+                "\nSUB "+reg+" "+num_reg+\
+                "\nJZERO "+reg+" 2"+\
+                "\nJUMP 3"+\
+                "\nSUB "+num_reg+" "+var_reg+\
+                "\nJZERO "+reg+" 2",\
+                var_lines0 + gen_lines + 8
+    
+    @_('NUMBER EQUAL NUMBER')
+    def condition(self, p):
+        if p.NUMBER0 == p.NUMBER1:
+            return "\nJUMP 2", 1
         
-        VariablesManager.add_register(reg)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+        return "", 0
 
-        return  val_code0+\
-                val_code1+\
-                "\nRESET "+reg+\
-                "\nINC "+reg+\
-                "\nADD "+reg+" "+val_reg0+\
-                "\nSUB "+reg+" "+val_reg1+\
-                "\nJZERO "+reg+" 2",\
-                val_lines0 + val_lines1 + 5
-
-    @_('value GREATERTHAN value')
+    @_('variable NOTEQUAL variable')
     def condition(self, p):
         reg = VariablesManager.get_register()
 
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
 
         VariablesManager.add_register(reg)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg0)
+        VariablesManager.add_register(var_reg1)
 
-        return  val_code0+\
-                val_code1+\
+        return  var_code0+\
+                var_code1+\
                 "\nRESET "+reg+\
-                "\nINC "+reg+\
-                "\nADD "+reg+" "+val_reg1+\
-                "\nSUB "+reg+" "+val_reg0+\
-                "\nJZERO "+reg+" 2",\
-                val_lines0 + val_lines1 + 5
+                "\nADD "+reg+" "+var_reg0+\
+                "\nSUB "+reg+" "+var_reg1+\
+                "\nJZERO "+reg+" 2"+\
+                "\nJUMP 3"+\
+                "\nSUB "+var_reg1+" "+var_reg0+\
+                "\nJZERO "+var_reg1+" 2"+\
+                "\nJUMP 2",\
+                var_lines0 + var_lines1 + 8
     
-    @_('value LESSEQUAL value')
+    @_('variable NOTEQUAL NUMBER')
     def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2"+"\nJUMP 2", var_lines0 + 2
+
         reg = VariablesManager.get_register()
 
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
 
         VariablesManager.add_register(reg)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
 
-        return  val_code0+\
-                val_code1+\
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
                 "\nRESET "+reg+\
-                "\nADD "+reg+" "+val_reg0+\
-                "\nSUB "+reg+" "+val_reg1+\
-                "\nJZERO "+reg+" 2",\
-                val_lines0 + val_lines1 + 4
+                "\nADD "+reg+" "+var_reg+\
+                "\nSUB "+reg+" "+num_reg+\
+                "\nJZERO "+reg+" 2"+\
+                "\nJUMP 3"+\
+                "\nSUB "+num_reg+" "+var_reg+\
+                "\nJZERO "+num_reg+" 2"+\
+                "\nJUMP 2",\
+                var_lines0 + gen_lines + 9
     
-    @_('value GREATEREQUAL value')
+    @_('NUMBER NOTEQUAL variable')
     def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2"+"\nJUMP 2", var_lines0 + 2
+
         reg = VariablesManager.get_register()
 
-        val_reg0, val_code0, val_lines0 = p.value0
-        val_reg1, val_code1, val_lines1 = p.value1
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
 
         VariablesManager.add_register(reg)
-        VariablesManager.add_register(val_reg0)
-        VariablesManager.add_register(val_reg1)
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
 
-        return  val_code0+\
-                val_code1+\
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
                 "\nRESET "+reg+\
-                "\nADD "+reg+" "+val_reg1+\
-                "\nSUB "+reg+" "+val_reg0+\
-                "\nJZERO "+reg+" 2",\
-                val_lines0 + val_lines1 + 4
+                "\nADD "+reg+" "+var_reg+\
+                "\nSUB "+reg+" "+num_reg+\
+                "\nJZERO "+reg+" 2"+\
+                "\nJUMP 3"+\
+                "\nSUB "+num_reg+" "+var_reg+\
+                "\nJZERO "+num_reg+" 2"+\
+                "\nJUMP 2",\
+                var_lines0 + gen_lines + 9
+    
+    @_('NUMBER NOTEQUAL NUMBER')
+    def condition(self, p):
+        if p.NUMBER0 != p.NUMBER1:
+            return "\nJUMP 2", 1
+        
+        return "", 0
+
+    @_('variable LESSTHAN variable')
+    def condition(self, p):
+
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
+
+        VariablesManager.add_register(var_reg0)
+        VariablesManager.add_register(var_reg1)
+
+        return  var_code0+\
+                var_code1+\
+                "\nINC "+var_reg0+\
+                "\nSUB "+var_reg0+" "+var_reg1+\
+                "\nJZERO "+var_reg0+" 2",\
+                var_lines0 + var_lines1 + 3
+    
+    @_('variable LESSTHAN NUMBER')
+    def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return "", 0
+        
+        if p.NUMBER == 1:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2", var_lines0 + 1
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nINC "+var_reg+\
+                "\nSUB "+var_reg+" "+num_reg+\
+                "\nJZERO "+var_reg+" 2",\
+                var_lines0 + gen_lines + 4
+    
+    @_('NUMBER LESSTHAN variable')
+    def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2"+"\nJUMP 2", var_lines0 + 2
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER+1, num_reg)
+
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nSUB "+num_reg+" "+var_reg+\
+                "\nJZERO "+num_reg+" 2",\
+                var_lines0 + gen_lines + 3
+    
+    @_('NUMBER LESSTHAN NUMBER')
+    def condition(self, p):
+        if p.NUMBER0 < p.NUMBER1:
+            return "\nJUMP 2", 1
+        
+        return "", 0
+
+    @_('variable GREATERTHAN variable')
+    def condition(self, p):
+
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
+
+        VariablesManager.add_register(var_reg0)
+        VariablesManager.add_register(var_reg1)
+
+        return  var_code0+\
+                var_code1+\
+                "\nINC "+var_reg1+\
+                "\nSUB "+var_reg1+" "+var_reg0+\
+                "\nJZERO "+var_reg1+" 2",\
+                var_lines0 + var_lines1 + 3
+    
+    @_('variable GREATERTHAN NUMBER')
+    def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2"+"\nJUMP 2", var_lines0 + 2
+        
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER+1, num_reg)
+
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nSUB "+num_reg+" "+var_reg+\
+                "\nJZERO "+num_reg+" 2",\
+                var_lines0 + gen_lines + 3
+    
+    @_('NUMBER GREATERTHAN variable')
+    def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return "", 0
+        
+        if p.NUMBER == 1:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2", var_lines0 + 1
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nINC "+var_reg+\
+                "\nSUB "+var_reg+" "+num_reg+\
+                "\nJZERO "+var_reg+" 2",\
+                var_lines0 + gen_lines + 4
+    
+    @_('NUMBER GREATERTHAN NUMBER')
+    def condition(self, p):
+        if p.NUMBER0 > p.NUMBER1:
+            return "\nJUMP 2", 1
+        
+        return "", 0
+
+    
+    @_('variable LESSEQUAL variable')
+    def condition(self, p):
+
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
+
+        VariablesManager.add_register(var_reg0)
+        VariablesManager.add_register(var_reg1)
+
+        return  var_code0+\
+                var_code1+\
+                "\nSUB "+var_reg0+" "+var_reg1+\
+                "\nJZERO "+var_reg0+" 2",\
+                var_lines0 + var_lines1 + 2
+    
+    @_('variable LESSEQUAL NUMBER')
+    def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2", var_lines0 + 1
+        
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nSUB "+var_reg+" "+num_reg+\
+                "\nJZERO "+var_reg+" 2",\
+                var_lines0 + gen_lines + 3
+    
+    @_('NUMBER LESSEQUAL variable')
+    def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return "\nJUMP 2", 1
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nSUB "+num_reg+" "+var_reg+\
+                "\nJZERO "+num_reg+" 2",\
+                var_lines0 + gen_lines + 3
+    
+    @_('NUMBER LESSEQUAL NUMBER')
+    def condition(self, p):
+        if p.NUMBER0 <= p.NUMBER1:
+            return "\nJUMP 2", 1
+        
+        return "", 0
+    
+    @_('variable GREATEREQUAL variable')
+    def condition(self, p):
+
+        var_reg0, var_code0, var_lines0 = p.variable0
+        var_reg1, var_code1, var_lines1 = p.variable1
+
+        VariablesManager.add_register(var_reg0)
+        VariablesManager.add_register(var_reg1)
+
+        return  var_code0+\
+                var_code1+\
+                "\nSUB "+var_reg1+" "+var_reg0+\
+                "\nJZERO "+var_reg1+" 2",\
+                var_lines0 + var_lines1 + 2
+    
+    @_('variable GREATEREQUAL NUMBER')
+    def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return "\nJUMP 2", 1
+        
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nSUB "+num_reg+" "+var_reg+\
+                "\nJZERO "+num_reg+" 2",\
+                var_lines0 + gen_lines + 3
+    
+    @_('NUMBER GREATEREQUAL variable')
+    def condition(self, p):
+        var_reg, var_code0, var_lines0 = p.variable
+
+        if p.NUMBER == 0:
+            VariablesManager.add_register(var_reg)
+            return var_code0+"\nJZERO "+ var_reg+" 2", var_lines0 + 1
+
+        num_reg = VariablesManager.get_register()
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+
+        VariablesManager.add_register(var_reg)
+        VariablesManager.add_register(num_reg)
+
+        return  var_code0+\
+                "\nRESET "+num_reg+\
+                gen_code+\
+                "\nSUB "+var_reg+" "+num_reg+\
+                "\nJZERO "+var_reg+" 2",\
+                var_lines0 + gen_lines + 3
+    
+    @_('NUMBER GREATEREQUAL NUMBER')
+    def condition(self, p):
+        if p.NUMBER0 >= p.NUMBER1:
+            return "\nJUMP 2", 1
+        
+        return "", 0
 #endregion
 
 #region IF
