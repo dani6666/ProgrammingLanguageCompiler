@@ -403,7 +403,7 @@ class LanguageParser(Parser):
         var_reg1, var_code1, var_lines1 = p.variable1
 
         multi_code, result_register, multi_lines = \
-            Helpers.multiplication([var_reg0, var_reg1],[reg1, reg2, reg3])
+            Helpers.multiplication([var_reg0, var_reg1], reg1)
 
         if reg1 != result_register:
             VariablesManager.add_register(reg1)
@@ -447,7 +447,7 @@ class LanguageParser(Parser):
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
 
         multi_code, result_register, multi_lines = \
-            Helpers.multiplication([var_reg, num_reg],[reg1, reg2, reg3])
+            Helpers.multiplication([var_reg, num_reg],reg1)
 
         if reg1 != result_register:
             VariablesManager.add_register(reg1)
@@ -493,7 +493,7 @@ class LanguageParser(Parser):
         gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
 
         multi_code, result_register, multi_lines = \
-            Helpers.multiplication([num_reg, var_reg],[reg1, reg2, reg3])
+            Helpers.multiplication([num_reg, var_reg],reg1)
 
         if reg1 != result_register:
             VariablesManager.add_register(reg1)
