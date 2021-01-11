@@ -1,6 +1,7 @@
 from sly import Parser
 from language_lexer import LanguageLexer
 from variables_manager import VariablesManager
+from flow_manager import FlowManager
 from helpers import Helpers
 
 
@@ -68,7 +69,7 @@ class LanguageParser(Parser):
 
         gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
 
-        return reg, \
+        return False, reg, \
                 "\nRESET "+reg+\
                 gen_code+\
                 "\nLOAD "+reg+" "+reg,\
@@ -81,6 +82,17 @@ class LanguageParser(Parser):
 
         start_location, start_index = VariablesManager.get_table_data(p.ID0)
         reg0 = VariablesManager.get_register()
+
+        if FlowManager.check_for_constant(p.ID1):
+            gen_code, gen_lines = Helpers.generate_number(
+                VariablesManager.get_table_location(p.ID0, FlowManager.get_constant_value(p.ID1)), reg0)
+
+            return False, reg0, \
+                "\nRESET "+reg0+\
+                gen_code+\
+                "\nLOAD "+reg0+" "+reg0,\
+                gen_lines+2
+
         reg1 = VariablesManager.get_register()
 
         gen_code0, gen_lines0 = Helpers.generate_number(var_location, reg1)
@@ -88,8 +100,8 @@ class LanguageParser(Parser):
         gen_code2, gen_lines2 = Helpers.generate_number(start_location, reg1)
 
         VariablesManager.add_register(reg1)
-
-        return reg0, \
+        # to do
+        return False, reg0, \
             "\nRESET "+reg1+\
             gen_code0+\
             "\nLOAD "+reg0+" " +reg1+\
@@ -109,10 +121,13 @@ class LanguageParser(Parser):
         VariablesManager.check_initialization(p.ID)
 
         reg = VariablesManager.get_register()
-        
+
+        if FlowManager.check_for_constant(p.ID):
+            return True, FlowManager.get_constant_value(p.ID), None, None
+
         gen_code, gen_lines = Helpers.generate_number(var_location, reg)
 
-        return reg,\
+        return False, reg,\
             "\nRESET "+reg+\
             gen_code+\
             "\nLOAD "+reg+" " +reg,\
@@ -203,7 +218,7 @@ class LanguageParser(Parser):
 #region value
     @_('variable')
     def value(self, p):
-        return p.variable
+        return p.variable[1:3]
     
     @_('NUMBER')
     def value(self, p):
