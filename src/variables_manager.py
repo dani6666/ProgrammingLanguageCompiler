@@ -52,8 +52,9 @@ class VariablesManager:
     def undeclare_last_for():
         last_for = VariablesManager.declared_fors[-1]
         VariablesManager.declared_fors = VariablesManager.declared_fors[:-1]
-        VariablesManager.for_locations.pop(last_for)
-        VariablesManager.next_location-=2
+        last_location = VariablesManager.for_locations.pop(last_for)
+        if last_location == VariablesManager.next_location - 2:
+            VariablesManager.next_location-=2
 
     def get_table_location(id, index):
         if id in VariablesManager.variables_locations.keys():
