@@ -41,7 +41,7 @@ class VariablesManager:
 
         VariablesManager.declared_fors.append(id)
         VariablesManager.for_locations[id]=VariablesManager.next_location
-        VariablesManager.next_location+=3
+        VariablesManager.next_location+=2
 
         return VariablesManager.for_locations[id]
     
@@ -53,7 +53,7 @@ class VariablesManager:
         last_for = VariablesManager.declared_fors[-1]
         VariablesManager.declared_fors = VariablesManager.declared_fors[:-1]
         VariablesManager.for_locations.pop(last_for)
-        VariablesManager.next_location-=3
+        VariablesManager.next_location-=2
 
     def get_table_location(id, index):
         if id in VariablesManager.variables_locations.keys():

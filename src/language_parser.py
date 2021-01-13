@@ -275,9 +275,6 @@ class LanguageParser(Parser):
     
     @_('NUMBER')
     def value(self, p):
-        # reg = VariablesManager.get_register()
-        # gen_code, gen_lines = Helpers.generate_number(p.NUMBER, reg)
-        # return True , reg, "\nRESET "+reg + gen_code, gen_lines+1
         return True , p.NUMBER
 
 #endregion
@@ -1340,10 +1337,8 @@ class LanguageParser(Parser):
                 gen_code+\
                 "\nSTORE "+val_reg0+" "+reg0+\
                 "\nINC "+reg0+\
-                "\nSTORE "+val_reg0+" "+reg0+\
-                "\nINC "+reg0+\
                 "\nSTORE "+val_reg1+" "+reg0,\
-                val_lines0 + val_lines1 + gen_lines + 6
+                val_lines0 + val_lines1 + gen_lines + 4
     
     
     @_('FOR ID FROM value DOWNTO value')
@@ -1379,316 +1374,8 @@ class LanguageParser(Parser):
                 gen_code+\
                 "\nSTORE "+val_reg0+" "+reg0+\
                 "\nINC "+reg0+\
-                "\nSTORE "+val_reg0+" "+reg0+\
-                "\nINC "+reg0+\
                 "\nSTORE "+val_reg1+" "+reg0,\
-                val_lines0 + val_lines1 + gen_lines + 6
-        # VariablesManager.initialize_variable(p.ID)
-        # for_location = VariablesManager.declare_for(p.ID)
-
-        # FlowManager.loops = FlowManager.loops + 1
-
-        # reg0 = VariablesManager.get_register()
-
-        # gen_code, gen_lines = Helpers.generate_number(for_location, reg0)
-
-        # if p.value0[0] and p.value1[0]:
-        #     reg1 = VariablesManager.get_register()
-
-        #     gen_code0, gen_lines0 = Helpers.generate_number(p.value0[1], reg1)
-
-        #     gen_code1, gen_lines1 = Helpers.generate_number(p.value1[1], reg1)
-
-        #     VariablesManager.add_register(reg0)
-        #     VariablesManager.add_register(reg1)
-
-        #     return  for_location, "\nRESET "+reg0+\
-        #         gen_code+\
-        #         "\nRESET "+reg1+\
-        #         gen_code0+\
-        #         "\nSTORE "+reg1+" "+reg0+\
-        #         "\nINC "+reg0+\
-        #         "\nSTORE "+reg1+" "+reg0+\
-        #         "\nRESET "+reg1+\
-        #         gen_code1+\
-        #         "\nINC "+reg0+\
-        #         "\nSTORE "+reg1+" "+reg0,\
-        #         gen_lines0 + gen_lines1 + gen_lines + 8
-        
-        # if p.value0[0]:
-        #     reg1 = VariablesManager.get_register()
-
-        #     gen_code0, gen_lines0 = Helpers.generate_number(p.value0[1], reg1)
-
-        #     val_reg1, val_code1, val_lines1 = p.value1[1:4]
-
-        #     VariablesManager.add_register(reg0)
-        #     VariablesManager.add_register(reg1)
-        #     VariablesManager.add_register(val_reg1)
-
-        #     return  for_location, "\nRESET "+reg0+\
-        #         gen_code+\
-        #         "\nRESET "+reg1+\
-        #         gen_code0+\
-        #         "\nSTORE "+reg1+" "+reg0+\
-        #         "\nINC "+reg0+\
-        #         "\nSTORE "+reg1+" "+reg0+\
-        #         val_code1+\
-        #         "\nINC "+reg0+\
-        #         "\nSTORE "+val_reg1+" "+reg0,\
-        #         gen_lines0 + val_lines1 + gen_lines + 7
-
-        # if p.value1[0]:
-        #     reg1 = VariablesManager.get_register()
-
-        #     val_reg0, val_code0, val_lines0 = p.value0
-
-        #     gen_code1, gen_lines1 = Helpers.generate_number(p.value1[1], reg1)
-
-        #     VariablesManager.add_register(reg0)
-        #     VariablesManager.add_register(reg1)
-        #     VariablesManager.add_register(val_reg0)
-
-        #     return  for_location, "\nRESET "+reg0+\
-        #         gen_code+\
-        #         val_code0+\
-        #         "\nSTORE "+val_reg0+" "+reg0+\
-        #         "\nINC "+reg0+\
-        #         "\nSTORE "+val_reg0+" "+reg0+\
-        #         "\nRESET "+reg1+\
-        #         gen_code1+\
-        #         "\nINC "+reg0+\
-        #         "\nSTORE "+reg1+" "+reg0,\
-        #         val_lines0 + gen_lines1 + gen_lines + 7
-
-        # val_reg0, val_code0, val_lines0 = p.value0[1:4]
-        # val_reg1, val_code1, val_lines1 = p.value1[1:4]
-
-        # VariablesManager.add_register(reg0)
-        # VariablesManager.add_register(val_reg0)
-        # VariablesManager.add_register(val_reg1)
-
-        # return  for_location, val_code0+\
-        #         val_code1+\
-        #         "\nRESET "+reg0+\
-        #         gen_code+\
-        #         "\nSTORE "+val_reg0+" "+reg0+\
-        #         "\nINC "+reg0+\
-        #         "\nSTORE "+val_reg0+" "+reg0+\
-        #         "\nINC "+reg0+\
-        #         "\nSTORE "+val_reg1+" "+reg0,\
-        #         val_lines0 + val_lines1 + gen_lines + 6
-
-
-
-
-
-
-
-
-
-
-
-    # @_('ENDFOR')
-    # def end_of_for(self, p):
-    #     VariablesManager.undeclare_last_for()
-
-    # @_('FOR ID FROM value TO value')
-    # def for_asc_range(self, p):
-    #     VariablesManager.initialize_variable(p.ID)
-    #     for_location = VariablesManager.declare_for(p.ID)
-
-    #     FlowManager.loops = FlowManager.loops + 1
-
-    #     reg0 = VariablesManager.get_register()
-
-    #     gen_code, gen_lines = Helpers.generate_number(for_location, reg0)
-
-    #     if p.value0[0] and p.value1[0]:
-    #         reg1 = VariablesManager.get_register()
-
-    #         gen_code0, gen_lines0 = Helpers.generate_number(p.value0[1], reg1)
-
-    #         gen_code1, gen_lines1 = Helpers.generate_number(p.value1[1], reg1)
-
-    #         VariablesManager.add_register(reg0)
-    #         VariablesManager.add_register(reg1)
-
-    #         return  for_location, "\nRESET "+reg0+\
-    #             gen_code+\
-    #             "\nRESET "+reg1+\
-    #             gen_code0+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             "\nRESET "+reg1+\
-    #             gen_code1+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+reg1+" "+reg0,\
-    #             gen_lines0 + gen_lines1 + gen_lines + 8
-        
-    #     if p.value0[0]:
-    #         reg1 = VariablesManager.get_register()
-
-    #         gen_code0, gen_lines0 = Helpers.generate_number(p.value0[1], reg1)
-
-    #         val_reg1, val_code1, val_lines1 = p.value1[1:4]
-
-    #         VariablesManager.add_register(reg0)
-    #         VariablesManager.add_register(reg1)
-    #         VariablesManager.add_register(val_reg1)
-
-    #         return  for_location, "\nRESET "+reg0+\
-    #             gen_code+\
-    #             "\nRESET "+reg1+\
-    #             gen_code0+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             val_code1+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+val_reg1+" "+reg0,\
-    #             gen_lines0 + val_lines1 + gen_lines + 7
-
-    #     if p.value1[0]:
-    #         reg1 = VariablesManager.get_register()
-
-    #         val_reg0, val_code0, val_lines0 = p.value0
-
-    #         gen_code1, gen_lines1 = Helpers.generate_number(p.value1[1], reg1)
-
-    #         VariablesManager.add_register(reg0)
-    #         VariablesManager.add_register(reg1)
-    #         VariablesManager.add_register(val_reg0)
-
-    #         return  for_location, "\nRESET "+reg0+\
-    #             gen_code+\
-    #             val_code0+\
-    #             "\nSTORE "+val_reg0+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+val_reg0+" "+reg0+\
-    #             "\nRESET "+reg1+\
-    #             gen_code1+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+reg1+" "+reg0,\
-    #             val_lines0 + gen_lines1 + gen_lines + 7
-
-    #     val_reg0, val_code0, val_lines0 = p.value0[1:4]
-    #     val_reg1, val_code1, val_lines1 = p.value1[1:4]
-
-    #     VariablesManager.add_register(reg0)
-    #     VariablesManager.add_register(val_reg0)
-    #     VariablesManager.add_register(val_reg1)
-
-    #     return  for_location, val_code0+\
-    #             val_code1+\
-    #             "\nRESET "+reg0+\
-    #             gen_code+\
-    #             "\nSTORE "+val_reg0+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+val_reg0+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+val_reg1+" "+reg0,\
-    #             val_lines0 + val_lines1 + gen_lines + 6
-    
-    # @_('FOR ID FROM value DOWNTO value')
-    # def for_desc_range(self, p):
-    #     VariablesManager.initialize_variable(p.ID)
-    #     for_location = VariablesManager.declare_for(p.ID)
-
-    #     FlowManager.loops = FlowManager.loops + 1
-
-    #     reg0 = VariablesManager.get_register()
-
-    #     gen_code, gen_lines = Helpers.generate_number(for_location, reg0)
-
-    #     if p.value0[0] and p.value1[0]:
-    #         reg1 = VariablesManager.get_register()
-
-    #         gen_code0, gen_lines0 = Helpers.generate_number(p.value0[1], reg1)
-
-    #         gen_code1, gen_lines1 = Helpers.generate_number(p.value1[1], reg1)
-
-    #         VariablesManager.add_register(reg0)
-    #         VariablesManager.add_register(reg1)
-
-    #         return  for_location, "\nRESET "+reg0+\
-    #             gen_code+\
-    #             "\nRESET "+reg1+\
-    #             gen_code0+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             "\nRESET "+reg1+\
-    #             gen_code1+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+reg1+" "+reg0,\
-    #             gen_lines0 + gen_lines1 + gen_lines + 8
-        
-    #     if p.value0[0]:
-    #         reg1 = VariablesManager.get_register()
-
-    #         gen_code0, gen_lines0 = Helpers.generate_number(p.value0[1], reg1)
-
-    #         val_reg1, val_code1, val_lines1 = p.value1[1:4]
-
-    #         VariablesManager.add_register(reg0)
-    #         VariablesManager.add_register(reg1)
-    #         VariablesManager.add_register(val_reg1)
-
-    #         return  for_location, "\nRESET "+reg0+\
-    #             gen_code+\
-    #             "\nRESET "+reg1+\
-    #             gen_code0+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             val_code1+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+val_reg1+" "+reg0,\
-    #             gen_lines0 + val_lines1 + gen_lines + 7
-
-    #     if p.value1[0]:
-    #         reg1 = VariablesManager.get_register()
-
-    #         val_reg0, val_code0, val_lines0 = p.value0
-
-    #         gen_code1, gen_lines1 = Helpers.generate_number(p.value1[1], reg1)
-
-    #         VariablesManager.add_register(reg0)
-    #         VariablesManager.add_register(reg1)
-    #         VariablesManager.add_register(val_reg0)
-
-    #         return  for_location, "\nRESET "+reg0+\
-    #             gen_code+\
-    #             val_code0+\
-    #             "\nSTORE "+val_reg0+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+val_reg0+" "+reg0+\
-    #             "\nRESET "+reg1+\
-    #             gen_code1+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+reg1+" "+reg0,\
-    #             val_lines0 + gen_lines1 + gen_lines + 7
-
-    #     val_reg0, val_code0, val_lines0 = p.value0[1:4]
-    #     val_reg1, val_code1, val_lines1 = p.value1[1:4]
-
-    #     VariablesManager.add_register(reg0)
-    #     VariablesManager.add_register(val_reg0)
-    #     VariablesManager.add_register(val_reg1)
-
-    #     return  for_location, val_code0+\
-    #             val_code1+\
-    #             "\nRESET "+reg0+\
-    #             gen_code+\
-    #             "\nSTORE "+val_reg0+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+val_reg0+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nSTORE "+val_reg1+" "+reg0,\
-    #             val_lines0 + val_lines1 + gen_lines + 6
-
+                val_lines0 + val_lines1 + gen_lines + 4
 
     @_('for_asc_range DO commands end_of_for')
     def command(self, p):
@@ -1702,9 +1389,7 @@ class LanguageParser(Parser):
         if p.for_asc_range[0] and p.for_asc_range[1]:
             for_location, value0, value1 = p.for_asc_range[2:5]
 
-            # if (value2 - value1) * com_lines < FlowManager.max_rows_to_expand_for:
-            #     result_code = ""
-            #     result_lines = 0
+            
 
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
             gen_code1, gen_lines1 = Helpers.generate_number(value0, reg1)
@@ -1712,6 +1397,29 @@ class LanguageParser(Parser):
 
             VariablesManager.add_register(reg0)
             VariablesManager.add_register(reg1)
+
+            if (value1 - value0) < FlowManager.max_iterations_to_expand_for:
+                result_code = "\nRESET "+reg0+\
+                                gen_code0+\
+                                "\nRESET "+reg1+\
+                                gen_code1+\
+                                "\nSTORE "+ reg1 + " "+reg0
+                result_lines = gen_lines0 + gen_lines1 + 3
+
+                for i in range(value1 - value0):
+                    result_code +=  com_code+\
+                                    "\nRESET "+reg0+\
+                                    gen_code0+\
+                                    "\nLOAD "+reg1+" "+reg0+\
+                                    "\nINC "+reg1+\
+                                    "\nSTORE "+reg1+" "+reg0
+                    result_lines += com_lines + gen_lines0 + 4
+                
+                if value1 - value0 >= 0:
+                    result_code += com_code
+                    result_lines += com_lines
+                
+                return result_code, result_lines
 
             return  "\nRESET "+reg0+\
                     gen_code0+\
@@ -1811,7 +1519,6 @@ class LanguageParser(Parser):
                 gen_code0+\
                 "\nLOAD "+reg1+" "+reg0+\
                 "\nINC "+reg0+\
-                "\nINC "+reg0+\
                 "\nLOAD "+reg2+" "+reg0+\
                 "\nRESET "+reg0+\
                 "\nINC "+reg0+\
@@ -1824,50 +1531,9 @@ class LanguageParser(Parser):
                 "\nLOAD "+reg1+" "+reg0+\
                 "\nINC "+reg1+\
                 "\nSTORE "+reg1+" "+reg0+\
-                "\nJUMP -"+str(com_lines+gen_lines0+12),\
-                range_lines + com_lines + gen_lines0*2 + 15
+                "\nJUMP -"+str(com_lines+gen_lines0+11),\
+                range_lines + com_lines + gen_lines0*2 + 14
     
-    # @_('for_desc_range DO commands end_of_for')
-    # def command(self, p):
-    #     FlowManager.loops = FlowManager.loops - 1
-        
-    #     reg0 = VariablesManager.get_register()
-    #     reg1 = VariablesManager.get_register()
-    #     reg2 = VariablesManager.get_register()
-
-    #     com_code, com_lines = p.commands
-
-    #     for_location, range_code, range_lines = p.for_desc_range
-
-    #     gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
-    #     gen_code1, gen_lines1 = Helpers.generate_number(for_location + 2, reg0)
-
-    #     VariablesManager.add_register(reg0)
-    #     VariablesManager.add_register(reg1)
-    #     VariablesManager.add_register(reg2)
-
-    #     return  range_code+\
-    #             "\nRESET "+reg0+\
-    #             gen_code0+\
-    #             "\nLOAD "+reg1+" "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nLOAD "+reg2+" "+reg0+\
-    #             "\nRESET "+reg0+\
-    #             "\nINC "+reg0+\
-    #             "\nADD "+reg0+" "+reg1+\
-    #             "\nSUB "+reg0+" "+reg2+\
-    #             "\nJZERO "+reg0+" "+str(com_lines+gen_lines0+7)+\
-    #             com_code+\
-    #             "\nRESET "+reg0+\
-    #             gen_code0+\
-    #             "\nLOAD "+reg1+" "+reg0+\
-    #             "\nJZERO "+reg1+" 4"+\
-    #             "\nDEC "+reg1+\
-    #             "\nSTORE "+reg1+" "+reg0+\
-    #             "\nJUMP -"+str(com_lines+gen_lines0+13),\
-    #             range_lines + com_lines + gen_lines0*2  + 16
-
     @_('for_desc_range DO commands end_of_for')
     def command(self, p):
         FlowManager.loops = FlowManager.loops - 1
@@ -1880,16 +1546,35 @@ class LanguageParser(Parser):
         if p.for_desc_range[0] and p.for_desc_range[1]:
             for_location, value0, value1 = p.for_desc_range[2:5]
 
-            # if (value2 - value1) * com_lines < FlowManager.max_rows_to_expand_for:
-            #     result_code = ""
-            #     result_lines = 0
-
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
             gen_code1, gen_lines1 = Helpers.generate_number(value0, reg1)
             gen_code2, gen_lines2 = Helpers.generate_number(value1, reg0)
 
             VariablesManager.add_register(reg0)
             VariablesManager.add_register(reg1)
+
+            if (value0 - value1) < FlowManager.max_iterations_to_expand_for:
+                result_code =   "\nRESET "+reg0+\
+                                gen_code0+\
+                                "\nRESET "+reg1+\
+                                gen_code1+\
+                                "\nSTORE "+ reg1 + " "+reg0
+                result_lines = gen_lines0 + gen_lines1 + 3
+
+                for i in range(value0 - value1):
+                    result_code +=  com_code+\
+                                    "\nRESET "+reg0+\
+                                    gen_code0+\
+                                    "\nLOAD "+reg1+" "+reg0+\
+                                    "\nDEC "+reg1+\
+                                    "\nSTORE "+reg1+" "+reg0
+                    result_lines += com_lines + gen_lines0 + 4
+                
+                if value0 - value1 >= 0:
+                    result_code += com_code
+                    result_lines += com_lines
+                
+                return result_code, result_lines
 
             return  "\nRESET "+reg0+\
                     gen_code0+\
@@ -1994,7 +1679,6 @@ class LanguageParser(Parser):
                 gen_code0+\
                 "\nLOAD "+reg1+" "+reg0+\
                 "\nINC "+reg0+\
-                "\nINC "+reg0+\
                 "\nLOAD "+reg2+" "+reg0+\
                 "\nRESET "+reg0+\
                 "\nINC "+reg0+\
@@ -2008,8 +1692,8 @@ class LanguageParser(Parser):
                 "\nJZERO "+reg1+" 4"+\
                 "\nDEC "+reg1+\
                 "\nSTORE "+reg1+" "+reg0+\
-                "\nJUMP -"+str(com_lines+gen_lines0+13),\
-                range_lines + com_lines + gen_lines0*2 + 16
+                "\nJUMP -"+str(com_lines+gen_lines0+12),\
+                range_lines + com_lines + gen_lines0*2 + 15
 
  
 #endregion
