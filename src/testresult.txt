@@ -83,7 +83,7 @@
 
  program0.imp passed for input input2.txt in time 9077, i/o: 2800.
 
- program1.imp passed for input input1.txt in time 61004, i/o: 2500.
+ program1.imp passed for input input1.txt in time 60905, i/o: 2500.
 
  program2.imp passed for input input1.txt in time 874302, i/o: 300.
 
@@ -107,4 +107,4 @@
 
  8-for.imp passed for input input1.txt in time 97172, i/o: 600.
 
- 9-sort.imp passed for input input1.txt in time 73317, i/o: 4500.
+ 9-sort.imp passed for input input1.txt in time 73185, i/o: 4500.

@@ -89,12 +89,11 @@ class LanguageParser(Parser):
         gen_code2, gen_lines2 = Helpers.generate_number(start_location, reg1)
 
         VariablesManager.add_register(reg1)
-        # to do
+        
         return reg0, \
             "\nRESET "+reg1+\
             gen_code0+\
             "\nLOAD "+reg0+" " +reg1+\
-            "\nRESET "+reg1+\
             "\nRESET "+reg1+\
             gen_code1+\
             "\nSUB "+reg0+" "+reg1+\
@@ -102,7 +101,7 @@ class LanguageParser(Parser):
             gen_code2+\
             "\nADD "+reg0+" "+reg1+\
             "\nLOAD "+reg0+" "+reg0,\
-            gen_lines0 + gen_lines1 + gen_lines2 + 8
+            gen_lines0 + gen_lines1 + gen_lines2 + 7
 
     @_('ID')
     def variable(self, p):
