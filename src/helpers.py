@@ -17,14 +17,18 @@ class Helpers:
         return code, lines
 
     def multiplication(args, free):
-        return  "\nJZERO "+args[1]+" 8"+\
+        return  "\nJODD "+args[1]+" 2"+\
+                "\nJUMP 3"+\
+                "\nADD "+free+" "+args[0]+\
+                "\nDEC "+args[1]+\
+                "\nJZERO "+args[1]+" 8"+\
+                "\nSHR "+args[1]+\
+                "\nSHL "+args[0]+\
                 "\nJODD "+args[1]+" 2"+\
                 "\nJUMP 3"+\
                 "\nADD "+free+" "+args[0]+\
                 "\nDEC "+args[1]+\
-                "\nSHR "+args[1]+\
-                "\nSHL "+args[0]+\
-                "\nJUMP -7", free, 8
+                "\nJUMP -7", free, 12
 
     # a b    c d e
     # c = 1
