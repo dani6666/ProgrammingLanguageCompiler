@@ -498,26 +498,19 @@ class LanguageParser(Parser):
 
         reg1 = VariablesManager.get_register()
 
-        num_reg = VariablesManager.get_register()
-        gen_code, gen_lines = Helpers.generate_number(const, num_reg)
+        result_code = var_code+"\nRESET "+reg1
+        result_lines = var_lines+ 1
+        while const > 0:
+            if const % 2 == 1:
+                result_code=result_code+"\nADD "+reg1 + " "+var_reg
+                result_lines+=1
+                const -= 1
+            const = const // 2
+            result_code =result_code+ "\nSHL "+var_reg
+            result_lines+=1
 
-        multi_code, result_register, multi_lines = \
-            Helpers.multiplication([var_reg, num_reg],reg1)
-
-        if reg1 != result_register:
-            VariablesManager.add_register(reg1)
-        if var_reg != result_register:
-            VariablesManager.add_register(var_reg)
-        if num_reg != result_register:
-            VariablesManager.add_register(num_reg)
-
-        return  False, result_register,\
-                var_code+\
-                "\nRESET "+num_reg+\
-                gen_code+\
-                "\nRESET "+reg1+\
-                multi_code,\
-                var_lines + gen_lines + multi_lines + 2
+        VariablesManager.add_register(var_reg)
+        return False, reg1, result_code, result_lines
     
     @_('value DIV value')
     def expression(self, p):
