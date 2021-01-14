@@ -11,7 +11,7 @@
 
  factorial3.imp passed for input input2.txt in time 16276889, i/o: 200.
 
- loop.imp passed for input input1.txt in time 487000747, i/o: 300.
+ loop.imp passed for input input1.txt in time 487000746, i/o: 300.
 
  loop_range.imp passed for input input1.txt in time 525, i/o: 300.
 
@@ -29,13 +29,13 @@
 
  tab1.imp passed for input input1.txt in time 29974, i/o: 2500.
 
- tab2.imp passed for input input1.txt in time 247459, i/o: 3700.
+ tab2.imp passed for input input1.txt in time 246824, i/o: 3700.
 
- tab3.imp passed for input input1.txt in time 2873, i/o: 400.
+ tab3.imp passed for input input1.txt in time 2872, i/o: 400.
 
- tab3.imp passed for input input2.txt in time 2873, i/o: 400.
+ tab3.imp passed for input input2.txt in time 2872, i/o: 400.
 
- tab3.imp passed for input input3.txt in time 2949, i/o: 400.
+ tab3.imp passed for input input3.txt in time 2948, i/o: 400.
 
  arithm2.imp passed for input input1.txt in time 408648, i/o: 800.
 
@@ -91,7 +91,7 @@
 
  program2.imp passed for input input3.txt in time 17882, i/o: 300.
 
- 2-fib.imp passed for input input1.txt in time 5751, i/o: 200.
+ 2-fib.imp passed for input input1.txt in time 5750, i/o: 200.
 
  3-fib-factorial.imp passed for input input1.txt in time 17201, i/o: 300.
 

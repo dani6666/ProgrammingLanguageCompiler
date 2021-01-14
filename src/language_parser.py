@@ -500,14 +500,20 @@ class LanguageParser(Parser):
 
         result_code = var_code+"\nRESET "+reg1
         result_lines = var_lines+ 1
+        
+        if const % 2 == 1:
+            result_code=result_code+"\nADD "+reg1 + " "+var_reg
+            result_lines+=1
+            const -= 1
+
         while const > 0:
+            const = const // 2
+            result_code =result_code+ "\nSHL "+var_reg
+            result_lines+=1
             if const % 2 == 1:
                 result_code=result_code+"\nADD "+reg1 + " "+var_reg
                 result_lines+=1
                 const -= 1
-            const = const // 2
-            result_code =result_code+ "\nSHL "+var_reg
-            result_lines+=1
 
         VariablesManager.add_register(var_reg)
         return False, reg1, result_code, result_lines
