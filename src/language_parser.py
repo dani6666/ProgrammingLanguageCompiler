@@ -130,6 +130,8 @@ class LanguageParser(Parser):
 
     @_('ID LEFT NUMBER RIGHT')
     def variable_reference(self, p):
+        if FlowManager.loops != 0 or FlowManager.repeat_loops != 0:
+            FlowManager.drop_constant_table(p.ID, p.NUMBER)
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
         return reg, "\nRESET "+reg + gen_code, gen_lines+1, None, p.ID, p.NUMBER
@@ -142,9 +144,14 @@ class LanguageParser(Parser):
 
         if FlowManager.check_for_constant(p.ID1):
             index = FlowManager.get_constant_value(p.ID1)
+            if FlowManager.loops != 0 or FlowManager.repeat_loops != 0:
+                FlowManager.drop_constant_table(p.ID0, index)
             gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, index), reg)
 
-            return reg, "\nRESET "+reg + gen_code, gen_lines+1, None, p.ID, index
+            return reg, "\nRESET "+reg + gen_code, gen_lines+1, None, p.ID0, index
+
+        if FlowManager.loops != 0 or FlowManager.repeat_loops != 0:
+            FlowManager.drop_whole_constant_table(p.ID0)
 
         reg1 = VariablesManager.get_register()
 
@@ -172,6 +179,9 @@ class LanguageParser(Parser):
         var_location = VariablesManager.get_location(p.ID)
         VariablesManager.check_for_iterator(p.ID)
         VariablesManager.initialize_variable(p.ID)
+
+        if FlowManager.loops != 0 or FlowManager.repeat_loops != 0:
+            FlowManager.drop_constant_variable(p.ID)
 
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(var_location, reg)
@@ -223,7 +233,7 @@ class LanguageParser(Parser):
     @_('ID LEFT NUMBER RIGHT')
     def value(self, p):
         if FlowManager.check_for_table_constant(p.ID, p.NUMBER):
-            return True, FlowManager.get_constant_table_value(p.ID, index)
+            return True, FlowManager.get_constant_table_value(p.ID, p.NUMBER)
 
         reg = VariablesManager.get_register()
 
@@ -247,6 +257,7 @@ class LanguageParser(Parser):
             index = FlowManager.get_constant_value(p.ID1)
 
             if FlowManager.check_for_table_constant(p.ID0, index):
+                VariablesManager.add_register(reg0)
                 return True, FlowManager.get_constant_table_value(p.ID0, index)
 
             gen_code, gen_lines = Helpers.generate_number(
@@ -308,9 +319,13 @@ class LanguageParser(Parser):
 #region IO    
     @_('READ variable_reference SEMICOLON')
     def command(self, p):
-        reg, code, lines, name = p.variable_reference
+        reg, code, lines, name, tab_name, tab_index = p.variable_reference
         if name is not None:
             FlowManager.drop_constant_variable(name)
+        elif tab_index is None:
+            FlowManager.drop_whole_constant_table(tab_name)
+        else:
+            FlowManager.drop_constant_table(tab_name, tab_index)
         VariablesManager.add_register(reg)
         return code+"\nGET "+reg, lines+1
 
@@ -777,12 +792,13 @@ class LanguageParser(Parser):
 #region ASSIGNments
     @_('variable_reference ASSIGN expression SEMICOLON')
     def command(self, p):
+        
         ref_reg, ref_code, ref_lines, var_name, tab_name, tab_index = p.variable_reference
         if p.expression[0]:
             if var_name is not None:
                 FlowManager.set_constant_variable(var_name, p.expression[1])
             elif tab_index is None:
-                FlowManager.drop_constant_table(tab_name)
+                FlowManager.drop_whole_constant_table(tab_name)
             else:
                 FlowManager.set_constant_table(tab_name, tab_index, p.expression[1])
             
@@ -802,7 +818,7 @@ class LanguageParser(Parser):
         if var_name is not None:
             FlowManager.drop_constant_variable(var_name)
         elif tab_index is None:
-            FlowManager.drop_constant_table(tab_name)
+            FlowManager.drop_whole_constant_table(tab_name)
         else:
             FlowManager.drop_constant_table(tab_name, tab_index)
 
