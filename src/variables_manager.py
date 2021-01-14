@@ -6,6 +6,7 @@ class VariablesManager:
     tables_locations={}
     for_locations={}
     declared_fors=[]
+    used_iterators=[]
     next_location = 0
     availble_registers = ['a','b','c','d','e','f']
 
@@ -22,6 +23,8 @@ class VariablesManager:
     def check_initialization(id):
         if id not in VariablesManager.initialized_variables:
             raise Exception("Line "+str(LanguageLexer.line_count)+": Use of not initialized variable: "+id)
+
+        VariablesManager.mark_iterator_as_used(id)
     
     def declare_table(id, start, end):
         if end < start:
@@ -49,12 +52,23 @@ class VariablesManager:
         if id in VariablesManager.for_locations.keys():
             raise Exception("Line "+str(LanguageLexer.line_count)+": For iterator modified: "+id)
     
+    def mark_iterator_as_used(id):
+        if id in VariablesManager.for_locations.keys() and id not in VariablesManager.used_iterators:
+            VariablesManager.used_iterators.append(id)
+    
+    def check_for_used_iterator(id):
+        if id in VariablesManager.used_iterators:
+            VariablesManager.used_iterators.remove(id)
+            return True
+        return False
+    
     def undeclare_last_for():
         last_for = VariablesManager.declared_fors[-1]
         VariablesManager.declared_fors = VariablesManager.declared_fors[:-1]
         last_location = VariablesManager.for_locations.pop(last_for)
-        if last_location == VariablesManager.next_location - 2:
-            VariablesManager.next_location-=2
+        VariablesManager.next_location-=2
+
+        return last_for
 
     def get_table_location(id, index):
         if id in VariablesManager.variables_locations.keys():

@@ -178,6 +178,7 @@ class LanguageParser(Parser):
     @_('ID LEFT ID RIGHT')
     def write_variable_reference(self, p):
         start_location, start_index = VariablesManager.get_table_data(p.ID0)
+        VariablesManager.check_initialization(p.ID1)
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
 
@@ -1302,7 +1303,7 @@ class LanguageParser(Parser):
 #region FOR
     @_('ENDFOR')
     def end_of_for(self, p):
-        VariablesManager.undeclare_last_for()
+        return VariablesManager.undeclare_last_for()
 
     @_('FOR ID FROM value TO value')
     def for_asc_range(self, p):
@@ -1389,8 +1390,6 @@ class LanguageParser(Parser):
         if p.for_asc_range[0] and p.for_asc_range[1]:
             for_location, value0, value1 = p.for_asc_range[2:5]
 
-            
-
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
             gen_code1, gen_lines1 = Helpers.generate_number(value0, reg1)
             gen_code2, gen_lines2 = Helpers.generate_number(value1+1, reg0)
@@ -1399,6 +1398,9 @@ class LanguageParser(Parser):
             VariablesManager.add_register(reg1)
 
             if (value1 - value0) < FlowManager.max_iterations_to_expand_for:
+                if not VariablesManager.check_for_used_iterator(p.end_of_for):
+                    return com_code*(value1 - value0 + 1), com_lines*(value1 - value0 + 1)
+
                 result_code = "\nRESET "+reg0+\
                                 gen_code0+\
                                 "\nRESET "+reg1+\
@@ -1554,6 +1556,9 @@ class LanguageParser(Parser):
             VariablesManager.add_register(reg1)
 
             if (value0 - value1) < FlowManager.max_iterations_to_expand_for:
+                if not VariablesManager.check_for_used_iterator(p.end_of_for):
+                    return com_code*(value0 - value1 + 1), com_lines*(value0 - value1 + 1)
+
                 result_code =   "\nRESET "+reg0+\
                                 gen_code0+\
                                 "\nRESET "+reg1+\

@@ -11,9 +11,9 @@
 
  factorial3.imp passed for input input2.txt in time 16276889, i/o: 200.
 
- loop.imp passed for input input1.txt in time 606000937, i/o: 300.
+ loop.imp passed for input input1.txt in time 487000937, i/o: 300.
 
- loop_range.imp passed for input input1.txt in time 568, i/o: 300.
+ loop_range.imp passed for input input1.txt in time 525, i/o: 300.
 
  nestedLoop2.imp passed for input input1.txt in time 2214468, i/o: 700.
 
