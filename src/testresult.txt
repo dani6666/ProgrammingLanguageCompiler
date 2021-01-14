@@ -27,15 +27,15 @@
 
  simple2.imp passed for input input3.txt in time 3701, i/o: 2600.
 
- tab1.imp passed for input input1.txt in time 30101, i/o: 2500.
+ tab1.imp passed for input input1.txt in time 29974, i/o: 2500.
 
  tab2.imp passed for input input1.txt in time 260824, i/o: 3700.
 
- tab3.imp passed for input input1.txt in time 3120, i/o: 400.
+ tab3.imp passed for input input1.txt in time 3054, i/o: 400.
 
- tab3.imp passed for input input2.txt in time 3120, i/o: 400.
+ tab3.imp passed for input input2.txt in time 3054, i/o: 400.
 
- tab3.imp passed for input input3.txt in time 3196, i/o: 400.
+ tab3.imp passed for input input3.txt in time 3130, i/o: 400.
 
  arithm2.imp passed for input input1.txt in time 408648, i/o: 800.
 
@@ -97,7 +97,7 @@
 
  4-factorial.imp passed for input input1.txt in time 13323, i/o: 200.
 
- 5-tab.imp passed for input input1.txt in time 22303, i/o: 2600.
+ 5-tab.imp passed for input input1.txt in time 22273, i/o: 2600.
 
  6-mod-mult.imp passed for input input1.txt in time 118950, i/o: 400.
 

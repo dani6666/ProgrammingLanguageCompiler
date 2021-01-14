@@ -80,8 +80,18 @@ class LanguageParser(Parser):
         var_location = VariablesManager.get_location(p.ID1)
         VariablesManager.check_initialization(p.ID1)
 
-        start_location, start_index = VariablesManager.get_table_data(p.ID0)
         reg0 = VariablesManager.get_register()
+
+        if FlowManager.check_for_constant(p.ID1):
+            gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, FlowManager.get_constant_value(p.ID1)), reg0)
+
+            return reg0, \
+                    "\nRESET "+reg0+\
+                    gen_code+\
+                    "\nLOAD "+reg0+" "+reg0,\
+                    gen_lines+2
+
+        start_location, start_index = VariablesManager.get_table_data(p.ID0)
         reg1 = VariablesManager.get_register()
 
         gen_code0, gen_lines0 = Helpers.generate_number(var_location, reg1)
@@ -89,7 +99,7 @@ class LanguageParser(Parser):
         gen_code2, gen_lines2 = Helpers.generate_number(start_location, reg1)
 
         VariablesManager.add_register(reg1)
-        
+
         return reg0, \
             "\nRESET "+reg1+\
             gen_code0+\
@@ -129,6 +139,12 @@ class LanguageParser(Parser):
         start_location, start_index = VariablesManager.get_table_data(p.ID0)
         VariablesManager.check_initialization(p.ID1)
         reg = VariablesManager.get_register()
+
+        if FlowManager.check_for_constant(p.ID1):
+            gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, FlowManager.get_constant_value(p.ID1)), reg)
+
+            return reg, "\nRESET "+reg + gen_code, gen_lines+1, None
+
         reg1 = VariablesManager.get_register()
 
         gen_code0, gen_lines0 = Helpers.generate_number(VariablesManager.get_location(p.ID1), reg1)
