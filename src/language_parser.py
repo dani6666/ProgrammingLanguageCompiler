@@ -132,7 +132,7 @@ class LanguageParser(Parser):
     def variable_reference(self, p):
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
-        return reg, "\nRESET "+reg + gen_code, gen_lines+1, None
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1, None, p.ID, p.NUMBER
 
     @_('ID LEFT ID RIGHT')
     def variable_reference(self, p):
@@ -141,9 +141,10 @@ class LanguageParser(Parser):
         reg = VariablesManager.get_register()
 
         if FlowManager.check_for_constant(p.ID1):
-            gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, FlowManager.get_constant_value(p.ID1)), reg)
+            index = FlowManager.get_constant_value(p.ID1)
+            gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, index), reg)
 
-            return reg, "\nRESET "+reg + gen_code, gen_lines+1, None
+            return reg, "\nRESET "+reg + gen_code, gen_lines+1, None, p.ID, index
 
         reg1 = VariablesManager.get_register()
 
@@ -164,7 +165,7 @@ class LanguageParser(Parser):
             "\nRESET "+reg1+\
             gen_code2+\
             "\nSUB "+reg+" "+reg1,\
-            gen_lines0 + gen_lines1 + gen_lines2 + 6, None
+            gen_lines0 + gen_lines1 + gen_lines2 + 6, None, p.ID0, None
 
     @_('ID')
     def variable_reference(self, p):
@@ -174,7 +175,7 @@ class LanguageParser(Parser):
 
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(var_location, reg)
-        return reg, "\nRESET "+reg + gen_code, gen_lines+1, p.ID
+        return reg, "\nRESET "+reg + gen_code, gen_lines+1, p.ID, None, None
     
     @_('ID')
     def write_variable_reference(self, p):
@@ -221,6 +222,9 @@ class LanguageParser(Parser):
 #region value
     @_('ID LEFT NUMBER RIGHT')
     def value(self, p):
+        if FlowManager.check_for_table_constant(p.ID, p.NUMBER):
+            return True, FlowManager.get_constant_table_value(p.ID, index)
+
         reg = VariablesManager.get_register()
 
         gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID, p.NUMBER), reg)
@@ -240,8 +244,13 @@ class LanguageParser(Parser):
         reg0 = VariablesManager.get_register()
 
         if FlowManager.check_for_constant(p.ID1):
+            index = FlowManager.get_constant_value(p.ID1)
+
+            if FlowManager.check_for_table_constant(p.ID0, index):
+                return True, FlowManager.get_constant_table_value(p.ID0, index)
+
             gen_code, gen_lines = Helpers.generate_number(
-                VariablesManager.get_table_location(p.ID0, FlowManager.get_constant_value(p.ID1)), reg0)
+                VariablesManager.get_table_location(p.ID0, index), reg0)
 
             return False, reg0, \
                 "\nRESET "+reg0+\
@@ -500,7 +509,7 @@ class LanguageParser(Parser):
 
         result_code = var_code+"\nRESET "+reg1
         result_lines = var_lines+ 1
-        
+
         if const % 2 == 1:
             result_code=result_code+"\nADD "+reg1 + " "+var_reg
             result_lines+=1
@@ -768,10 +777,14 @@ class LanguageParser(Parser):
 #region ASSIGNments
     @_('variable_reference ASSIGN expression SEMICOLON')
     def command(self, p):
-        ref_reg, ref_code, ref_lines, var_name = p.variable_reference
+        ref_reg, ref_code, ref_lines, var_name, tab_name, tab_index = p.variable_reference
         if p.expression[0]:
             if var_name is not None:
                 FlowManager.set_constant_variable(var_name, p.expression[1])
+            elif tab_index is None:
+                FlowManager.drop_constant_table(tab_name)
+            else:
+                FlowManager.set_constant_table(tab_name, tab_index, p.expression[1])
             
             reg = VariablesManager.get_register()
 
@@ -788,6 +801,10 @@ class LanguageParser(Parser):
 
         if var_name is not None:
             FlowManager.drop_constant_variable(var_name)
+        elif tab_index is None:
+            FlowManager.drop_constant_table(tab_name)
+        else:
+            FlowManager.drop_constant_table(tab_name, tab_index)
 
         exp_reg, exp_code, exp_lines = p.expression[1:4]
         
