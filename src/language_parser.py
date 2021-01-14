@@ -128,6 +128,7 @@ class LanguageParser(Parser):
     @_('ID LEFT ID RIGHT')
     def variable_reference(self, p):
         start_location, start_index = VariablesManager.get_table_data(p.ID0)
+        VariablesManager.check_initialization(p.ID1)
         reg = VariablesManager.get_register()
         reg1 = VariablesManager.get_register()
 
