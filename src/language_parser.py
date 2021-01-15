@@ -161,6 +161,7 @@ class LanguageParser(Parser):
             index = FlowManager.get_constant_value(p.ID1)
             if FlowManager.loops != 0 or FlowManager.repeat_loops != 0:
                 FlowManager.drop_constant_table(p.ID0, index)
+
             gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, index), reg0)
 
             return reg0, "\nRESET "+reg0 + gen_code, gen_lines+1, None, p.ID0, index
@@ -1448,9 +1449,11 @@ class LanguageParser(Parser):
             return True, True, for_location, p.value0[1], p.value1[1]
         
         if p.value0[0]:
+            VariablesManager.add_register(p.value1[1])
             return True, False, for_location, p.value0[1], p.value1[1:4] 
 
         if p.value1[0]:
+            VariablesManager.add_register(p.value0[1])
             return False, True, for_location, p.value0[1:4], p.value1[1]
 
         reg0 = VariablesManager.get_register()
@@ -1485,9 +1488,11 @@ class LanguageParser(Parser):
             return True, True, for_location, p.value0[1], p.value1[1]
         
         if p.value0[0]:
+            VariablesManager.add_register(p.value1[1])
             return True, False, for_location, p.value0[1], p.value1[1:4] 
 
         if p.value1[0]:
+            VariablesManager.add_register(p.value0[1])
             return False, True, for_location, p.value0[1:4], p.value1[1]
 
         reg0 = VariablesManager.get_register()
@@ -1578,12 +1583,18 @@ class LanguageParser(Parser):
 
             var_reg, var_code, var_lines = variable
 
+            if reg0 == var_reg:
+                reg0 = VariablesManager.get_register()
+                VariablesManager.add_register(var_reg)
+            elif reg1 == var_reg:
+                reg1 = VariablesManager.get_register()
+                VariablesManager.add_register(var_reg)
+
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
             gen_code1, gen_lines1 = Helpers.generate_number(value0, reg1)
 
             VariablesManager.add_register(reg0)
             VariablesManager.add_register(reg1)
-            VariablesManager.add_register(var_reg)
 
             return  "\nRESET "+reg0+\
                     gen_code0+\
@@ -1613,12 +1624,18 @@ class LanguageParser(Parser):
 
             var_reg, var_code, var_lines = variable
 
+            if reg0 == var_reg:
+                reg0 = VariablesManager.get_register()
+                VariablesManager.add_register(var_reg)
+            elif reg1 == var_reg:
+                reg1 = VariablesManager.get_register()
+                VariablesManager.add_register(var_reg)
+
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
             gen_code1, gen_lines1 = Helpers.generate_number(value1+1, reg0)
 
             VariablesManager.add_register(reg0)
             VariablesManager.add_register(reg1)
-            VariablesManager.add_register(var_reg)
 
             return  "\nRESET "+reg0+\
                     gen_code0+\
@@ -1738,12 +1755,18 @@ class LanguageParser(Parser):
 
             var_reg, var_code, var_lines = variable
 
+            if reg0 == var_reg:
+                reg0 = VariablesManager.get_register()
+                VariablesManager.add_register(var_reg)
+            elif reg1 == var_reg:
+                reg1 = VariablesManager.get_register()
+                VariablesManager.add_register(var_reg)
+
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
             gen_code1, gen_lines1 = Helpers.generate_number(value0, reg1)
 
             VariablesManager.add_register(reg0)
             VariablesManager.add_register(reg1)
-            VariablesManager.add_register(var_reg)
 
             return  "\nRESET "+reg0+\
                     gen_code0+\
@@ -1774,12 +1797,18 @@ class LanguageParser(Parser):
 
             var_reg, var_code, var_lines = variable
 
+            if reg0 == var_reg:
+                reg0 = VariablesManager.get_register()
+                VariablesManager.add_register(var_reg)
+            elif reg1 == var_reg:
+                reg1 = VariablesManager.get_register()
+                VariablesManager.add_register(var_reg)
+
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
             gen_code1, gen_lines1 = Helpers.generate_number(value1, reg0)
 
             VariablesManager.add_register(reg0)
             VariablesManager.add_register(reg1)
-            VariablesManager.add_register(var_reg)
 
             return  "\nRESET "+reg0+\
                     gen_code0+\
