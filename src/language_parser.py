@@ -82,15 +82,6 @@ class LanguageParser(Parser):
 
         reg0 = VariablesManager.get_register()
 
-        if FlowManager.check_for_constant(p.ID1):
-            gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, FlowManager.get_constant_value(p.ID1)), reg0)
-
-            return reg0, \
-                    "\nRESET "+reg0+\
-                    gen_code+\
-                    "\nLOAD "+reg0+" "+reg0,\
-                    gen_lines+2
-
         start_location, start_index = VariablesManager.get_table_data(p.ID0)
         reg1 = VariablesManager.get_register()
 
