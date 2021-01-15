@@ -1,5 +1,5 @@
 class FlowManager:
-    max_iterations_to_expand_for = 10
+    max_iterations_to_expand_for = 30
     variables_values = {}
     tables_values = []
     ifs = 0
