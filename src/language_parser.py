@@ -140,15 +140,15 @@ class LanguageParser(Parser):
     def variable_reference(self, p):
         start_location, start_index = VariablesManager.get_table_data(p.ID0)
         VariablesManager.check_initialization(p.ID1)
-        reg = VariablesManager.get_register()
+        reg0 = VariablesManager.get_register()
 
         if FlowManager.check_for_constant(p.ID1):
             index = FlowManager.get_constant_value(p.ID1)
             if FlowManager.loops != 0 or FlowManager.repeat_loops != 0:
                 FlowManager.drop_constant_table(p.ID0, index)
-            gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, index), reg)
+            gen_code, gen_lines = Helpers.generate_number(VariablesManager.get_table_location(p.ID0, index), reg0)
 
-            return reg, "\nRESET "+reg + gen_code, gen_lines+1, None, p.ID0, index
+            return reg0, "\nRESET "+reg0 + gen_code, gen_lines+1, None, p.ID0, index
 
         if FlowManager.loops != 0 or FlowManager.repeat_loops != 0:
             FlowManager.drop_whole_constant_table(p.ID0)
@@ -162,17 +162,41 @@ class LanguageParser(Parser):
 
         VariablesManager.add_register(reg1)
 
-        return reg,\
-            "\nRESET "+reg1+\
-            gen_code0+\
-            "\nLOAD "+reg+" " +reg1+\
-            "\nRESET "+reg1+\
-            gen_code1+\
-            "\nADD "+reg+" "+reg1+\
-            "\nRESET "+reg1+\
-            gen_code2+\
-            "\nSUB "+reg+" "+reg1,\
-            gen_lines0 + gen_lines1 + gen_lines2 + 6, None, p.ID0, None
+        var_location = VariablesManager.get_location(p.ID1)
+
+        if start_index == start_location:
+            gen_code0, gen_lines0 = Helpers.generate_number(var_location, reg1)
+
+            return reg0, \
+                "\nRESET "+reg1+\
+                gen_code0+\
+                "\nLOAD "+reg0+" " +reg1,\
+                gen_lines0 + 2, None, p.ID0, None
+
+        elif start_index > start_location:
+            gen_code0, gen_lines0 = Helpers.generate_number(var_location, reg1)
+            gen_code1, gen_lines1 = Helpers.generate_number(start_index - start_location, reg1)
+
+            return reg0, \
+                "\nRESET "+reg1+\
+                gen_code0+\
+                "\nLOAD "+reg0+" " +reg1+\
+                "\nRESET "+reg1+\
+                gen_code1+\
+                "\nSUB "+reg0+" "+reg1,\
+                gen_lines0 + gen_lines1 + 4, None, p.ID0, None
+        else:
+            gen_code0, gen_lines0 = Helpers.generate_number(var_location, reg1)
+            gen_code1, gen_lines1 = Helpers.generate_number(start_location - start_index, reg1)
+
+            return reg0, \
+                "\nRESET "+reg1+\
+                gen_code0+\
+                "\nLOAD "+reg0+" " +reg1+\
+                "\nRESET "+reg1+\
+                gen_code1+\
+                "\nADD "+reg0+" "+reg1,\
+                gen_lines0 + gen_lines1 + 4, None, p.ID0, None
 
     @_('ID')
     def variable_reference(self, p):
