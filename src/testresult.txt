@@ -31,11 +31,11 @@
 
  tab2.imp passed for input input1.txt in time 245824, i/o: 3700.
 
- tab3.imp passed for input input1.txt in time 2785, i/o: 400.
+ tab3.imp passed for input input1.txt in time 2764, i/o: 400.
 
- tab3.imp passed for input input2.txt in time 2785, i/o: 400.
+ tab3.imp passed for input input2.txt in time 2764, i/o: 400.
 
- tab3.imp passed for input input3.txt in time 2861, i/o: 400.
+ tab3.imp passed for input input3.txt in time 2840, i/o: 400.
 
  arithm2.imp passed for input input1.txt in time 408648, i/o: 800.
 
