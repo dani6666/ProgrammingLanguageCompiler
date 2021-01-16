@@ -71,7 +71,7 @@ class Helpers:
                 # "\nSHR "+arg[1]+\
                 # "\nJUMP -3"+\
     def division(arg, free):
-        return  "\nJZERO "+arg[1]+" 21"+\
+        return  "\nJZERO "+arg[1]+" 20"+\
                 "\nSHL "+arg[1]+\
                 "\nINC "+free[0]+\
                 "\nADD "+free[2] +" "+ arg[1]+\
@@ -81,7 +81,6 @@ class Helpers:
                 "\nSHR "+arg[1]+\
                 "\nSHL "+free[1]+\
                 "\nDEC "+free[0]+\
-                "\nJZERO "+arg[1]+" 8"+\
                 "\nINC "+free[2]+\
                 "\nADD "+free[2] +" "+ arg[0]+\
                 "\nSUB "+free[2] +" "+ arg[1]+\
@@ -91,7 +90,7 @@ class Helpers:
                 "\nSUB "+arg[0]+" "+arg[1]+\
                 "\nSHR "+arg[1]+\
                 "\nJZERO "+free[0]+" 2"+\
-                "\nJUMP -12", free[1], 21
+                "\nJUMP -11", free[1], 20
     # int a=4, b=2, c=0, d=0, e=0;
     # if b == 0
     #     return 0
