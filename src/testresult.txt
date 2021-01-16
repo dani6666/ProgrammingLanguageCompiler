@@ -15,7 +15,7 @@
 
  loop_range.imp passed for input input1.txt in time 525, i/o: 300.
 
- nestedLoop2.imp passed for input input1.txt in time 2214468, i/o: 700.
+ nestedLoop2.imp passed for input input1.txt in time 2203468, i/o: 700.
 
  simple1.imp passed for input input1.txt in time 2805, i/o: 1600.
 

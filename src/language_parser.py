@@ -1127,7 +1127,7 @@ class LanguageParser(Parser):
             return var_code0+"\nJZERO "+ var_reg+" 2", var_lines0 + 1
 
         num_reg = VariablesManager.get_register()
-        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER-1, num_reg)
 
         VariablesManager.add_register(var_reg)
         VariablesManager.add_register(num_reg)
@@ -1135,10 +1135,9 @@ class LanguageParser(Parser):
         return  var_code0+\
                 "\nRESET "+num_reg+\
                 gen_code+\
-                "\nINC "+var_reg+\
                 "\nSUB "+var_reg+" "+num_reg+\
                 "\nJZERO "+var_reg+" 2",\
-                var_lines0 + gen_lines + 4
+                var_lines0 + gen_lines + 3
     
     @_('NUMBER LESSTHAN variable')
     def condition(self, p):
@@ -1218,7 +1217,7 @@ class LanguageParser(Parser):
             return var_code0+"\nJZERO "+ var_reg+" 2", var_lines0 + 1
 
         num_reg = VariablesManager.get_register()
-        gen_code, gen_lines = Helpers.generate_number(p.NUMBER, num_reg)
+        gen_code, gen_lines = Helpers.generate_number(p.NUMBER-1, num_reg)
 
         VariablesManager.add_register(var_reg)
         VariablesManager.add_register(num_reg)
@@ -1226,10 +1225,9 @@ class LanguageParser(Parser):
         return  var_code0+\
                 "\nRESET "+num_reg+\
                 gen_code+\
-                "\nINC "+var_reg+\
                 "\nSUB "+var_reg+" "+num_reg+\
                 "\nJZERO "+var_reg+" 2",\
-                var_lines0 + gen_lines + 4
+                var_lines0 + gen_lines + 3
     
     @_('NUMBER GREATERTHAN NUMBER')
     def condition(self, p):
