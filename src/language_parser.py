@@ -16,14 +16,18 @@ class LanguageParser(Parser):
 
 #region program_structure
 
-    @_('DECLARE declarations BEGIN commands END')
+    @_('DECLARE declarations begin_program commands END')
     def program(self, p):
         return p.commands[0][1:]+"\nHALT"
     
-    @_('BEGIN commands END')
+    @_('begin_program commands END')
     def program(self, p):
         return p.commands[0][1:]+"\nHALT"
     
+    @_('BEGIN')
+    def begin_program(self, p):
+        VariablesManager.finish_table_declaration()
+
     @_('declarations COMMA ID LEFT NUMBER COLON NUMBER RIGHT')
     def declarations(self, p):
         VariablesManager.declare_table(p.ID, p.NUMBER0, p.NUMBER1)

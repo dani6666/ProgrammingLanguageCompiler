@@ -9,6 +9,7 @@ class VariablesManager:
     used_iterators=[]
     next_location = 0
     availble_registers = ['a','b','c','d','e','f']
+    tables_to_declare = []
 
     def declare_variable(id):
         if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
@@ -26,15 +27,19 @@ class VariablesManager:
 
         VariablesManager.mark_iterator_as_used(id)
     
+    def finish_table_declaration():
+        for (id, start, end) in VariablesManager.tables_to_declare:
+            if end < start:
+                raise Exception("Line "+str(LanguageLexer.line_count)+": End index bigger than start index")
+
+            if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
+                raise Exception("Line "+str(LanguageLexer.line_count)+": Variable already declared: "+id)
+
+            VariablesManager.tables_locations[id]=(VariablesManager.next_location,start,end)
+            VariablesManager.next_location+=end-start+1
+
     def declare_table(id, start, end):
-        if end < start:
-            raise Exception("Line "+str(LanguageLexer.line_count)+": End index bigger than start index")
-
-        if id in VariablesManager.variables_locations.keys() or id in VariablesManager.tables_locations.keys():
-            raise Exception("Line "+str(LanguageLexer.line_count)+": Variable already declared: "+id)
-
-        VariablesManager.tables_locations[id]=(VariablesManager.next_location,start,end)
-        VariablesManager.next_location+=end-start+1
+        VariablesManager.tables_to_declare.append((id, start, end))
     
     def declare_for(id):
         if id in VariablesManager.variables_locations.keys() or \
