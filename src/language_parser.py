@@ -476,10 +476,8 @@ class LanguageParser(Parser):
         var_reg, var_code, var_lines = variable
         if const == 0:
             return False, var_reg, var_code, var_lines
-        elif const == 1:
-            return False, var_reg, var_code+"\nINC "+var_reg, var_lines+1
-        elif const == 2:
-            return False, var_reg, var_code+"\nINC "+var_reg+"\nINC "+var_reg, var_lines+2
+        elif const <= 11:
+            return False, var_reg, var_code+("\nINC "+var_reg)*const, var_lines+const
 
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(const, reg)
@@ -520,10 +518,8 @@ class LanguageParser(Parser):
 
         if const == 0:
             return False, var_reg, var_code, var_lines
-        elif const == 1:
-            return False, var_reg, var_code+"\nDEC "+var_reg, var_lines+1
-        elif const == 2:
-            return False, var_reg, var_code+"\nDEC "+var_reg+"\nDEC "+var_reg, var_lines+2
+        elif const <= 11:
+            return False, var_reg, var_code+("\nDEC "+var_reg)*const, var_lines+const
 
         reg = VariablesManager.get_register()
         gen_code, gen_lines = Helpers.generate_number(const, reg)
@@ -919,8 +915,6 @@ class LanguageParser(Parser):
 #endregion
 
 #region condition
-
-# jesli tru to przeskakuje nastepna instrukcje
     @_('variable EQUAL variable')
     def condition(self, p):
         reg = VariablesManager.get_register()
@@ -1803,7 +1797,7 @@ class LanguageParser(Parser):
                 VariablesManager.add_register(var_reg)
 
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
-            gen_code1, gen_lines1 = Helpers.generate_number(value1, reg0)
+            gen_code1, gen_lines1 = Helpers.generate_number(value1-1, reg0)
 
             VariablesManager.add_register(reg0)
             VariablesManager.add_register(reg1)
@@ -1814,7 +1808,6 @@ class LanguageParser(Parser):
                     "\nSTORE "+ var_reg + " "+reg0+\
                     "\nRESET "+reg0+\
                     gen_code1+\
-                    "\nINC "+var_reg+\
                     "\nSUB "+var_reg+" "+reg0+\
                     "\nJZERO "+var_reg+" "+str(com_lines+gen_lines0+7)+\
                     com_code+\
@@ -1824,8 +1817,8 @@ class LanguageParser(Parser):
                     "\nJZERO "+var_reg+" 4"+\
                     "\nDEC "+var_reg+\
                     "\nSTORE "+var_reg+" "+reg0+\
-                    "\nJUMP -"+str(gen_lines0+gen_lines1+ com_lines+9),\
-                    gen_lines0 * 2 + var_lines + gen_lines1 + com_lines + 13
+                    "\nJUMP -"+str(gen_lines0+gen_lines1+ com_lines+8),\
+                    gen_lines0 * 2 + var_lines + gen_lines1 + com_lines + 12
 
         
         reg2 = VariablesManager.get_register()
@@ -1858,6 +1851,5 @@ class LanguageParser(Parser):
                 "\nSTORE "+reg1+" "+reg0+\
                 "\nJUMP -"+str(com_lines+gen_lines0+12),\
                 range_lines + com_lines + gen_lines0*2 + 15
-
  
 #endregion

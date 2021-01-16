@@ -29,7 +29,7 @@
 
  tab1.imp passed for input input1.txt in time 24913, i/o: 2500.
 
- tab2.imp passed for input input1.txt in time 245368, i/o: 3700.
+ tab2.imp passed for input input1.txt in time 242243, i/o: 3700.
 
  tab3.imp passed for input input1.txt in time 2737, i/o: 400.
 
@@ -59,15 +59,15 @@
 
  compare.imp passed for input input6.txt in time 906, i/o: 500.
 
- cond1.imp passed for input input1.txt in time 613, i/o: 300.
+ cond1.imp passed for input input1.txt in time 608, i/o: 300.
 
  cond2.imp passed for input input1.txt in time 555, i/o: 400.
 
  cond2.imp passed for input input2.txt in time 554, i/o: 400.
 
- cond_nested.imp passed for input input1.txt in time 2509, i/o: 1900.
+ cond_nested.imp passed for input input1.txt in time 2503, i/o: 1900.
 
- cond_nested.imp passed for input input2.txt in time 2582, i/o: 1900.
+ cond_nested.imp passed for input input2.txt in time 2576, i/o: 1900.
 
  factorial1.imp passed for input input1.txt in time 18877, i/o: 200.
 
