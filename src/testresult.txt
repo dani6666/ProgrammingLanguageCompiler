@@ -112,3 +112,19 @@
  matmult.imp passed for input input1.txt in time 47815, i/o: 3100.
 
  matmult.imp passed for input input2.txt in time 183841, i/o: 8100.
+
+ matmult.imp passed for input input1.txt in time 46282, i/o: 3100.
+
+ matmult.imp passed for input input2.txt in time 179240, i/o: 8100.
+
+ betterfor.imp passed for input input1.txt in time 5423, i/o: 1100.
+
+ betterfor.imp passed for input input2.txt in time 5396, i/o: 1100.
+
+ matmult.imp passed for input input1.txt in time 51839, i/o: 3100.
+
+ matmult.imp passed for input input2.txt in time 197129, i/o: 8100.
+
+ matmult.imp passed for input input1.txt in time 51720, i/o: 3100.
+
+ matmult.imp passed for input input2.txt in time 196936, i/o: 8100.
