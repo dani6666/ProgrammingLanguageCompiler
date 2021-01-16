@@ -1025,7 +1025,7 @@ class LanguageParser(Parser):
                 "\nADD "+reg+" "+var_reg0+\
                 "\nSUB "+reg+" "+var_reg1+\
                 "\nJZERO "+reg+" 2"+\
-                "\nJUMP 3"+\
+                "\nJUMP 5"+\
                 "\nSUB "+var_reg1+" "+var_reg0+\
                 "\nJZERO "+var_reg1+" 2"+\
                 "\nJUMP 2",\
@@ -1055,7 +1055,7 @@ class LanguageParser(Parser):
                 "\nADD "+reg+" "+var_reg+\
                 "\nSUB "+reg+" "+num_reg+\
                 "\nJZERO "+reg+" 2"+\
-                "\nJUMP 3"+\
+                "\nJUMP 5"+\
                 "\nSUB "+num_reg+" "+var_reg+\
                 "\nJZERO "+num_reg+" 2"+\
                 "\nJUMP 2",\
@@ -1085,7 +1085,7 @@ class LanguageParser(Parser):
                 "\nADD "+reg+" "+var_reg+\
                 "\nSUB "+reg+" "+num_reg+\
                 "\nJZERO "+reg+" 2"+\
-                "\nJUMP 3"+\
+                "\nJUMP 5"+\
                 "\nSUB "+num_reg+" "+var_reg+\
                 "\nJZERO "+num_reg+" 2"+\
                 "\nJUMP 2",\

@@ -51,9 +51,9 @@
 
  compare.imp passed for input input2.txt in time 907, i/o: 500.
 
- compare.imp passed for input input3.txt in time 899, i/o: 500.
+ compare.imp passed for input input3.txt in time 898, i/o: 500.
 
- compare.imp passed for input input4.txt in time 899, i/o: 500.
+ compare.imp passed for input input4.txt in time 898, i/o: 500.
 
  compare.imp passed for input input5.txt in time 906, i/o: 500.
 
@@ -85,9 +85,9 @@
 
  program1.imp passed for input input1.txt in time 55401, i/o: 2500.
 
- program2.imp passed for input input1.txt in time 869862, i/o: 300.
+ program2.imp passed for input input1.txt in time 869861, i/o: 300.
 
- program2.imp passed for input input2.txt in time 27093, i/o: 1100.
+ program2.imp passed for input input2.txt in time 27092, i/o: 1100.
 
  program2.imp passed for input input3.txt in time 17882, i/o: 300.
 
@@ -108,3 +108,7 @@
  8-for.imp passed for input input1.txt in time 96352, i/o: 600.
 
  9-sort.imp passed for input input1.txt in time 68515, i/o: 4500.
+
+ matmult.imp passed for input input1.txt in time 47815, i/o: 3100.
+
+ matmult.imp passed for input input2.txt in time 183841, i/o: 8100.
