@@ -1611,7 +1611,7 @@ class LanguageParser(Parser):
                     "\nJUMP -"+str(gen_lines0+ com_lines+8),\
                     gen_lines0 * 2 + gen_lines1 + var_lines + com_lines + 16
 
-        if p.for_asc_range[1]:# totest FOR FROM a TO 10
+        if p.for_asc_range[1]:
             for_location, variable, value1  = p.for_asc_range[2:5]
 
             var_reg, var_code, var_lines = variable
@@ -1797,7 +1797,7 @@ class LanguageParser(Parser):
                 VariablesManager.add_register(var_reg)
 
             gen_code0, gen_lines0 = Helpers.generate_number(for_location, reg0)
-            gen_code1, gen_lines1 = Helpers.generate_number(value1-1, reg0)
+            gen_code1, gen_lines1 = Helpers.generate_number(value1, reg0)
 
             VariablesManager.add_register(reg0)
             VariablesManager.add_register(reg1)
@@ -1808,6 +1808,7 @@ class LanguageParser(Parser):
                     "\nSTORE "+ var_reg + " "+reg0+\
                     "\nRESET "+reg0+\
                     gen_code1+\
+                    "\nINC "+var_reg+\
                     "\nSUB "+var_reg+" "+reg0+\
                     "\nJZERO "+var_reg+" "+str(com_lines+gen_lines0+7)+\
                     com_code+\
@@ -1817,7 +1818,7 @@ class LanguageParser(Parser):
                     "\nJZERO "+var_reg+" 4"+\
                     "\nDEC "+var_reg+\
                     "\nSTORE "+var_reg+" "+reg0+\
-                    "\nJUMP -"+str(gen_lines0+gen_lines1+ com_lines+8),\
+                    "\nJUMP -"+str(gen_lines0+gen_lines1+ com_lines+9),\
                     gen_lines0 * 2 + var_lines + gen_lines1 + com_lines + 12
 
         
