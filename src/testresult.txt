@@ -1,15 +1,15 @@
 
- arithm1.imp passed for input input1.txt in time 509545, i/o: 200.
+ arithm1.imp passed for input input1.txt in time 488545, i/o: 200.
 
- arithm1.imp passed for input input2.txt in time 509545, i/o: 200.
+ arithm1.imp passed for input input2.txt in time 488545, i/o: 200.
 
- factorial2.imp passed for input input1.txt in time 195075, i/o: 200.
+ factorial2.imp passed for input input1.txt in time 21712, i/o: 200.
 
- factorial2.imp passed for input input2.txt in time 32077598, i/o: 200.
+ factorial2.imp passed for input input2.txt in time 242849, i/o: 200.
 
- factorial3.imp passed for input input1.txt in time 118529, i/o: 200.
+ factorial3.imp passed for input input1.txt in time 31466, i/o: 200.
 
- factorial3.imp passed for input input2.txt in time 16272889, i/o: 200.
+ factorial3.imp passed for input input2.txt in time 340353, i/o: 200.
 
  loop.imp passed for input input1.txt in time 403000496, i/o: 300.
 
@@ -17,9 +17,9 @@
 
  nestedLoop2.imp passed for input input1.txt in time 2203468, i/o: 700.
 
- simple1.imp passed for input input1.txt in time 2808, i/o: 1600.
+ simple1.imp passed for input input1.txt in time 2830, i/o: 1600.
 
- simple1.imp passed for input input2.txt in time 2852, i/o: 1600.
+ simple1.imp passed for input input2.txt in time 2875, i/o: 1600.
 
  simple2.imp passed for input input1.txt in time 3814, i/o: 2600.
 
@@ -27,9 +27,9 @@
 
  simple2.imp passed for input input3.txt in time 3754, i/o: 2600.
 
- tab1.imp passed for input input1.txt in time 24913, i/o: 2500.
+ tab1.imp passed for input input1.txt in time 25206, i/o: 2500.
 
- tab2.imp passed for input input1.txt in time 242243, i/o: 3700.
+ tab2.imp passed for input input1.txt in time 242518, i/o: 3700.
 
  tab3.imp passed for input input1.txt in time 2199, i/o: 400.
 
@@ -45,7 +45,7 @@
 
  arithm3.imp passed for input input2.txt in time 724484, i/o: 500.
 
- calc.imp passed for input input1.txt in time 243625927, i/o: 300.
+ calc.imp passed for input input1.txt in time 244725927, i/o: 300.
 
  compare.imp passed for input input1.txt in time 907, i/o: 500.
 
@@ -65,13 +65,13 @@
 
  cond2.imp passed for input input2.txt in time 554, i/o: 400.
 
- cond_nested.imp passed for input input1.txt in time 2503, i/o: 1900.
+ cond_nested.imp passed for input input1.txt in time 2514, i/o: 1900.
 
  cond_nested.imp passed for input input2.txt in time 2576, i/o: 1900.
 
- factorial1.imp passed for input input1.txt in time 18877, i/o: 200.
+ factorial1.imp passed for input input1.txt in time 20002, i/o: 200.
 
- factorial1.imp passed for input input2.txt in time 213914, i/o: 200.
+ factorial1.imp passed for input input2.txt in time 224939, i/o: 200.
 
  0-div-mod.imp passed for input input1.txt in time 966, i/o: 600.
 
@@ -85,46 +85,46 @@
 
  program1.imp passed for input input1.txt in time 55401, i/o: 2500.
 
- program2.imp passed for input input1.txt in time 869861, i/o: 300.
+ program2.imp passed for input input1.txt in time 882071, i/o: 300.
 
- program2.imp passed for input input2.txt in time 26844, i/o: 1100.
+ program2.imp passed for input input2.txt in time 26899, i/o: 1100.
 
  program2.imp passed for input input3.txt in time 17672, i/o: 300.
 
  2-fib.imp passed for input input1.txt in time 2658, i/o: 200.
 
- 3-fib-factorial.imp passed for input input1.txt in time 14798, i/o: 300.
+ 3-fib-factorial.imp passed for input input1.txt in time 15043, i/o: 300.
 
- 4-factorial.imp passed for input input1.txt in time 11915, i/o: 200.
+ 4-factorial.imp passed for input input1.txt in time 9677, i/o: 200.
 
- 5-tab.imp passed for input input1.txt in time 18560, i/o: 2600.
+ 5-tab.imp passed for input input1.txt in time 18871, i/o: 2600.
 
- 6-mod-mult.imp passed for input input1.txt in time 118606, i/o: 400.
+ 6-mod-mult.imp passed for input input1.txt in time 119380, i/o: 400.
 
  7-loopiii.imp passed for input input1.txt in time 264039, i/o: 600.
 
  7-loopiii.imp passed for input input2.txt in time 264039, i/o: 600.
 
- 8-for.imp passed for input input1.txt in time 96352, i/o: 600.
+ 8-for.imp passed for input input1.txt in time 100047, i/o: 600.
 
- 9-sort.imp passed for input input1.txt in time 63595, i/o: 4500.
+ 9-sort.imp passed for input input1.txt in time 63870, i/o: 4500.
 
- matmult.imp passed for input input1.txt in time 40330, i/o: 3100.
+ matmult.imp passed for input input1.txt in time 42317, i/o: 3100.
 
- matmult.imp passed for input input2.txt in time 154026, i/o: 8100.
+ matmult.imp passed for input input2.txt in time 162079, i/o: 8100.
 
- matmult.imp passed for input input1.txt in time 38797, i/o: 3100.
+ matmult.imp passed for input input1.txt in time 40784, i/o: 3100.
 
- matmult.imp passed for input input2.txt in time 149425, i/o: 8100.
+ matmult.imp passed for input input2.txt in time 157478, i/o: 8100.
 
  betterfor.imp passed for input input1.txt in time 5423, i/o: 1100.
 
  betterfor.imp passed for input input2.txt in time 5396, i/o: 1100.
 
- matmult.imp passed for input input1.txt in time 40674, i/o: 3100.
+ matmult.imp passed for input input1.txt in time 42661, i/o: 3100.
 
- matmult.imp passed for input input2.txt in time 154506, i/o: 8100.
+ matmult.imp passed for input input2.txt in time 162559, i/o: 8100.
 
- matmult.imp passed for input input1.txt in time 40479, i/o: 3100.
+ matmult.imp passed for input input1.txt in time 42466, i/o: 3100.
 
- matmult.imp passed for input input2.txt in time 154093, i/o: 8100.
+ matmult.imp passed for input input2.txt in time 162146, i/o: 8100.

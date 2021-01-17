@@ -10,10 +10,8 @@ class LanguageLexer(Lexer):
      LEFT, RIGHT, COLON, SEMICOLON, END}
 
 
-    # String containing ignored characters
     ignore = ' \t\r'
 
-    # Regular expression rules for tokens
     COMMA       = r','
     DECLARE     = r'DECLARE'
     BEGIN       = r'BEGIN'
@@ -60,7 +58,6 @@ class LanguageLexer(Lexer):
 
     ignore_comment = r'\[[^\]]*\]'
 
-    # Line number tracking
     @_(r'\n+')
     def ignore_newline(self, t):
         LanguageLexer.line_count += t.value.count('\n')

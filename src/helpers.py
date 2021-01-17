@@ -17,7 +17,16 @@ class Helpers:
         return code, lines
 
     def multiplication(args, free):
-        return  "\nJODD "+args[1]+" 2"+\
+        return  "\nADD "+free+" "+args[1]+\
+                "\nSUB "+free+" "+args[0]+\
+                "\nJZERO "+free+" 7"+\
+                "\nADD "+free+" "+args[0]+\
+                "\nRESET "+args[1]+\
+                "\nADD "+args[1]+" "+args[0]+\
+                "\nRESET "+args[0]+\
+                "\nADD "+args[0]+" "+free+\
+                "\nRESET "+free+\
+                "\nJODD "+args[1]+" 2"+\
                 "\nJUMP 3"+\
                 "\nADD "+free+" "+args[0]+\
                 "\nDEC "+args[1]+\
@@ -28,7 +37,7 @@ class Helpers:
                 "\nJUMP 3"+\
                 "\nADD "+free+" "+args[0]+\
                 "\nDEC "+args[1]+\
-                "\nJUMP -7", free, 12
+                "\nJUMP -7", free, 21
 
     def division(arg, free):
         return  "\nJZERO "+arg[1]+" 20"+\
