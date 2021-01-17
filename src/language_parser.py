@@ -12,7 +12,7 @@ class LanguageParser(Parser):
         if t is None:
             raise Exception("Line "+str(LanguageLexer.line_count)+": Unexpected end of file")
 
-        raise Exception("Line "+str(LanguageLexer.line_count)+": Unexcpeted token " + str(t.value))
+        raise Exception("Line "+str(LanguageLexer.line_count)+": Unexpected token " + str(t.value))
 
 #region program_structure
 
