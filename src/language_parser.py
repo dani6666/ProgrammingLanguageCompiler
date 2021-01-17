@@ -967,7 +967,7 @@ class LanguageParser(Parser):
                 "\nJZERO "+reg+" 2"+\
                 "\nJUMP 3"+\
                 "\nSUB "+var_reg+" "+num_reg+\
-                "\nJZERO "+reg+" 2",\
+                "\nJZERO "+var_reg+" 2",\
                 var_lines0 + gen_lines + 8
     
     @_('NUMBER EQUAL variable')
@@ -996,7 +996,7 @@ class LanguageParser(Parser):
                 "\nJZERO "+reg+" 2"+\
                 "\nJUMP 3"+\
                 "\nSUB "+num_reg+" "+var_reg+\
-                "\nJZERO "+reg+" 2",\
+                "\nJZERO "+num_reg+" 2",\
                 var_lines0 + gen_lines + 8
     
     @_('NUMBER EQUAL NUMBER')
