@@ -1,6 +1,6 @@
 # ProgrammingLanguageCompiler
 
-The app is a compiler developed as a project for studies. It compiles given simple imperative language and returns a sequence of instructions for a given virtual machine. This version was the second fastest compiler (in terms of time needed to run generated code) out of 90 compilers on the whole year.
+The app is a compiler developed as a project for studies. It compiles given simple imperative language and returns a sequence of instructions for a given virtual machine. This version was the second-fastest compiler (in terms of time needed to run generated code) out of 90 compilers on the whole year.
 
 Requirements:  
 * Python 3.8.5
@@ -11,11 +11,11 @@ To run compiler:
 
 ## Language  
 
-Laguage operates only on natural numbers.  
+Language operates only on natural numbers.  
   
 Declaration `tab(10:100)` creates a table of 91 elements with indexes from 10 do 100 inclusive.  
   
-Number of iterations of `FOR` loop is determined at the begining of the loop and remains the same even when variables given as start and the end of the loop are changed inside the loop. The iterator can't be changed inside the loop.  
+Number of iterations of `FOR` loop is determined at the beginning of the loop and remains the same even when variables given as start and the end of the loop are changed inside the loop. The iterator can't be changed inside the loop.  
   
 `REPEAT-UNTIL` loop always executes at least once.  
   
